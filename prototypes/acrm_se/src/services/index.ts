@@ -203,6 +203,18 @@ export const operationsService = {
     mockOperationRequests.filter(r => r.priority === 'critical'),
 };
 
+// --- Activity Monitor Service ---
+// TODO: connect to ЕХД / торговая система / клиринг (агрегация активности)
+import { clients, activityProducts, markets } from '../data/mockDatabase';
+import type { ClientRecord, Market } from '../data/mockDatabase';
+
+export const activityMonitorService = {
+  getProducts: (): string[] => activityProducts,
+  getMarkets: (): Market[] => markets,
+  // Монитор активности отслеживает клиентов с данными по продуктам.
+  getClients: (): ClientRecord[] => clients.filter(c => c.productStatuses),
+};
+
 // --- Global Search ---
 // TODO: connect to полнотекстовый поиск ЕХД / ElasticSearch
 export const searchService = {

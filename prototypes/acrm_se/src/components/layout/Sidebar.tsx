@@ -1,7 +1,8 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard, Building2, Users, BarChart3, AlertTriangle,
-  CheckSquare, TrendingUp, Calendar, FileText, Target, Package, Globe,
+  LayoutDashboard, Building2, Users, AlertTriangle, CheckSquare,
+  Calendar, Package, Globe, Activity, Filter, Gauge, Lightbulb,
+  BookOpen, Sparkles,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { SearchBox } from './SearchBox';
@@ -19,17 +20,19 @@ const ICON = 18;
 
 const navItems: NavItem[] = [
   { label: 'Главная', icon: <LayoutDashboard size={ICON} strokeWidth={1.8} />, path: '__role__' },
-  { label: 'Холдинги', icon: <Building2 size={ICON} strokeWidth={1.8} />, path: '/holdings', roles: ['ceo', 'block_head', 'market_lead', 'manager'] },
-  { label: 'Персоны', icon: <Users size={ICON} strokeWidth={1.8} />, path: '/persons', roles: ['ceo', 'block_head', 'market_lead', 'manager'] },
-  { label: 'Алерты', icon: <AlertTriangle size={ICON} strokeWidth={1.8} />, path: '/alerts', badge: 5 },
   { label: 'Задачи', icon: <CheckSquare size={ICON} strokeWidth={1.8} />, path: '/tasks', badge: 8 },
-  { label: 'Аналитика доходов', icon: <BarChart3 size={ICON} strokeWidth={1.8} />, path: '/revenue', roles: ['ceo', 'block_head', 'market_lead'] },
-  { label: 'Когорты', icon: <Target size={ICON} strokeWidth={1.8} />, path: '/cohorts', roles: ['ceo', 'block_head', 'market_lead'] },
-  { label: 'Мероприятия', icon: <Calendar size={ICON} strokeWidth={1.8} />, path: '/events', roles: ['ceo', 'block_head', 'market_lead', 'manager'] },
-  { label: 'Стратегия', icon: <TrendingUp size={ICON} strokeWidth={1.8} />, path: '/strategy', roles: ['ceo', 'block_head', 'market_lead'] },
-  { label: 'Продукты', icon: <Package size={ICON} strokeWidth={1.8} />, path: '/products', roles: ['market_lead', 'manager'] },
-  { label: 'Новости', icon: <Globe size={ICON} strokeWidth={1.8} />, path: '/news' },
-  { label: 'Документы', icon: <FileText size={ICON} strokeWidth={1.8} />, path: '/agreements' },
+  { label: 'Алерты', icon: <AlertTriangle size={ICON} strokeWidth={1.8} />, path: '/alerts', badge: 5 },
+  { label: 'Монитор активности', icon: <Activity size={ICON} strokeWidth={1.8} />, path: '/activity' },
+  { label: 'Продукты', icon: <Package size={ICON} strokeWidth={1.8} />, path: '/products' },
+  { label: 'Воронка продаж', icon: <Filter size={ICON} strokeWidth={1.8} />, path: '/funnel' },
+  { label: 'Рынки', icon: <Globe size={ICON} strokeWidth={1.8} />, path: '/markets' },
+  { label: 'Клиенты', icon: <Building2 size={ICON} strokeWidth={1.8} />, path: '/clients' },
+  { label: 'Персоны', icon: <Users size={ICON} strokeWidth={1.8} />, path: '/persons' },
+  { label: 'Мероприятия', icon: <Calendar size={ICON} strokeWidth={1.8} />, path: '/events' },
+  { label: 'KPI', icon: <Gauge size={ICON} strokeWidth={1.8} />, path: '/kpi' },
+  { label: 'Инициативы', icon: <Lightbulb size={ICON} strokeWidth={1.8} />, path: '/initiatives' },
+  { label: 'База знаний', icon: <BookOpen size={ICON} strokeWidth={1.8} />, path: '/knowledge' },
+  { label: 'AI', icon: <Sparkles size={ICON} strokeWidth={1.8} />, path: '/ai' },
 ];
 
 const roleHomePath: Record<string, string> = {
