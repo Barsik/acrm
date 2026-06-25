@@ -5,6 +5,7 @@ import { Layout } from '../components/layout/Layout';
 import { activityMonitorService } from '../services';
 import { clientGroups } from '../data/mockDatabase';
 import { Package } from 'lucide-react';
+import { ProductAnalyticsTable } from './ProductAnalyticsTable';
 
 // Плоская палитра (flat UI) для статусов продукта.
 const STATUS_COLOR: Record<string, string> = {
@@ -191,6 +192,8 @@ export const ProductsPage = () => {
           )}
         </div>
       </div>
+
+      <ProductAnalyticsTable marketId={market} product={product} group={group} segment={segment} />
     </Layout>
   );
 };
