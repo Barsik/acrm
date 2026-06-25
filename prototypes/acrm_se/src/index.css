@@ -73,6 +73,35 @@ body {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
+/* Analytics tables (Рынки dashboard): compact rows, uppercase header. */
+.atable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+.ath {
+  padding: 8px 12px;
+  background: #F4F4F4;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #717171;
+  border-bottom: 1px solid #DADADA;
+  white-space: nowrap;
+  vertical-align: bottom;
+  line-height: 1.3;
+}
+.atd {
+  padding: 9px 12px;
+  border-bottom: 1px solid #E6E6E6;
+  vertical-align: middle;
+  color: #1C1C1C;
+}
+.atable tbody tr:hover .atd {
+  background: #F4F4F4;
+}
+
 /* Floating pill chrome (SideNav / AppHeader action pill) */
 .float-pill {
   background: #fff;

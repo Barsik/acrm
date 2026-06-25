@@ -14,6 +14,8 @@ import { PersonsListPage } from './pages/PersonsListPage';
 import { AlertsPage } from './pages/AlertsPage';
 import { TasksPage } from './pages/TasksPage';
 import { ActivityMonitorPage } from './pages/ActivityMonitorPage';
+import { ProductsPage } from './pages/ProductsPage';
+import { MarketsPage } from './pages/MarketsPage';
 import { FunnelPage } from './pages/FunnelPage';
 import { StrategyPage } from './pages/StrategyPage';
 import { CohortsPage } from './pages/CohortsPage';
@@ -53,6 +55,8 @@ const AppRoutes = () => (
     <Route path="/alerts" element={<AlertsPage />} />
     <Route path="/tasks" element={<TasksPage />} />
     <Route path="/activity" element={<ActivityMonitorPage />} />
+    <Route path="/products" element={<ProductsPage />} />
+    <Route path="/markets" element={<MarketsPage />} />
     <Route path="/funnel" element={<FunnelPage />} />
     <Route path="/strategy" element={<StrategyPage />} />
     <Route path="/cohorts" element={<CohortsPage />} />

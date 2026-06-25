@@ -1,0 +1,2087 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Аналитический фронт · Product Manager</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#E8E8E8;min-height:100vh;display:flex;flex-direction:column;font-size:13px;color:#1C1C1C}
+
+:root{
+  --bg:#E8E8E8;--s1:#FFFFFF;--s2:#F4F4F4;--s3:#EBEBEB;--s4:#F9F9F9;
+  --border:#DADADA;--border2:#E6E6E6;
+  --text:#1C1C1C;--muted:#717171;--muted2:#ADADAD;
+  --red:#E30613;--red-dim:rgba(227,6,19,.09);
+  --orange:#C85A08;--orange-dim:rgba(200,90,8,.1);
+  --green:#187A40;--green-dim:rgba(24,122,64,.1);
+  --blue:#2B63B8;--blue-dim:rgba(43,99,184,.1);
+}
+
+/* HEADER */
+.hdr{background:var(--red);border-bottom:3px solid rgba(0,0,0,.2);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.hdr-left{display:flex;align-items:center;gap:20px}
+.hdr-logo{font-size:13px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#fff}
+.hdr-meta{font-size:11px;color:rgba(255,255,255,.75);border-left:1px solid rgba(255,255,255,.3);padding-left:16px}
+.hdr-date{font-size:12px;color:#fff;font-weight:600}
+.hdr-right{display:flex;gap:10px;align-items:center}
+.btn{padding:7px 16px;border:1px solid rgba(255,255,255,.5);border-radius:3px;cursor:pointer;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:transparent;color:#fff;transition:all .15s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-family:inherit}
+.btn:hover{background:rgba(255,255,255,.15)}
+
+/* MAIN */
+.main{max-width:1500px;width:100%;margin:0 auto;padding:24px;flex:1}
+
+/* PANEL */
+.panel{background:var(--s1);border:1px solid var(--border);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:20px;overflow:hidden}
+.panel-hdr{padding:12px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);background:var(--s3)}
+.panel-hdr h2{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text)}
+.panel-body{padding:18px}
+
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
+.kpi{background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);position:relative;overflow:hidden;display:flex;flex-direction:column}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#C0C0C0}
+.kpi .lbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px}
+.kpi .val{font-size:17px;font-weight:900;color:#222;margin-bottom:4px}
+.kpi .sub{font-size:10px;color:var(--muted);line-height:1.4;margin-top:auto;padding-top:6px}
+.kpi .bar{height:3px;background:var(--border2);overflow:hidden;position:relative;margin-top:8px}
+.kpi .fill{height:100%;background:var(--green);position:absolute;left:0;top:0}
+
+/* TOGGLE */
+.toggle-bar{display:flex;gap:0;margin-bottom:20px;background:var(--s1);border:1px solid var(--border);border-radius:6px;overflow:hidden;width:fit-content;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.toggle-btn{padding:9px 20px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:all .15s;font-family:inherit}
+.toggle-btn.active{background:var(--red);color:#fff}
+
+/* SEGMENT FILTER TABS */
+.seg-tabs{display:flex;gap:8px;margin-bottom:16px}
+.seg-tab{padding:5px 14px;border-radius:2px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--s1);color:var(--muted);transition:all .15s;user-select:none}
+.seg-tab.active{background:var(--red);color:#fff;border-color:var(--red)}
+
+/* MATRIX */
+.matrix-wrap{overflow-x:auto}
+.matrix-tbl{border-collapse:collapse;font-size:11px;min-width:100%}
+.matrix-tbl th{padding:8px 10px;background:var(--s2);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);border-bottom:2px solid var(--border);white-space:nowrap;text-align:center;vertical-align:bottom}
+.matrix-tbl th.th-client{text-align:left;min-width:180px}
+.matrix-tbl th.th-seg{text-align:left;width:80px}
+.matrix-tbl td{padding:6px 8px;border-bottom:1px solid var(--border2);vertical-align:middle;text-align:center}
+.matrix-tbl td.td-client{text-align:left;font-weight:600;font-size:11px;white-space:nowrap}
+.matrix-tbl td.td-seg{text-align:left}
+.matrix-tbl tr:hover td{background:var(--s2)}
+.cell-yes{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:4px;background:var(--green-dim);color:var(--green);font-size:14px}
+.cell-no {display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:4px;background:var(--s3);color:var(--muted2);font-size:10px}
+.seg-divider td{background:var(--s3)!important;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:5px 10px}
+.prod-count{font-size:10px;font-weight:700;color:var(--blue);margin-top:2px}
+.th-prod-name{font-size:9px;color:var(--muted)}
+.th-prod-cnt{font-size:10px;font-weight:800;color:var(--blue)}
+.client-total{font-size:10px;font-weight:700;padding:2px 7px;border-radius:2px;background:var(--blue-dim);color:var(--blue)}
+
+/* PRODUCT CARDS VIEW */
+.prod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.prod-card{background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);position:relative;overflow:hidden}
+.prod-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--green)}
+.prod-card-name{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px}
+.prod-card-clients{font-size:22px;font-weight:900;color:#222}
+.prod-card-sub{font-size:10px;color:var(--muted);margin-bottom:10px}
+.pbar{height:5px;background:var(--border2);border-radius:2px;overflow:hidden;margin-bottom:12px}
+.pbar-fill{height:100%;background:var(--green);border-radius:2px}
+.seg-breakdown{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.seg-pill{font-size:9px;font-weight:700;padding:2px 7px;border-radius:2px}
+.sp-bank{background:rgba(120,60,200,.1);color:#6B35C8}
+.sp-corp{background:var(--green-dim);color:var(--green)}
+.sp-brok{background:var(--orange-dim);color:var(--orange)}
+.prod-comm{font-size:11px;color:var(--muted);border-top:1px solid var(--border2);padding-top:8px;margin-top:4px}
+.prod-comm b{color:#222;font-size:12px}
+.potential{font-size:10px;color:var(--orange);font-weight:700;margin-top:4px}
+
+/* ANALYTICS TABLE */
+.atbl{width:100%;border-collapse:collapse;font-size:11px}
+.atbl th{padding:8px 12px;background:var(--s2);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--border);text-align:left;white-space:nowrap;cursor:pointer;user-select:none;vertical-align:bottom;line-height:1.3}
+.atbl th:hover{color:var(--red)}
+.atbl td{padding:9px 12px;border-bottom:1px solid var(--border2);vertical-align:middle}
+.atbl-center th{text-align:center}
+.atbl-center td{text-align:center}
+.atbl-center thead tr:first-child th:first-child,.atbl-center td:first-child{text-align:left}
+.atbl tr:hover td{background:var(--s2)}
+.pen-bar{height:4px;background:var(--border2);border-radius:2px;overflow:hidden;margin-top:3px;width:80px}
+.pen-fill{height:100%;border-radius:2px}
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:2px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.b-bank{background:rgba(120,60,200,.1);color:#6B35C8}
+.b-corp{background:var(--green-dim);color:var(--green)}
+.b-broker{background:var(--orange-dim);color:var(--orange)}
+.sort-ico{color:var(--muted2)}
+
+/* SEGMENT PENETRATION */
+.seg-pen{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.sp-card{background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.sp-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px}
+.sp-avg{font-size:24px;font-weight:900;color:#222;margin-bottom:2px}
+.sp-avg-lbl{font-size:10px;color:var(--muted);margin-bottom:14px}
+.sp-prod-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:11px}
+.sp-prod-name{width:72px;color:var(--muted);flex-shrink:0}
+.sp-prod-bar{flex:1;height:4px;background:var(--border2);border-radius:2px;overflow:hidden}
+.sp-prod-fill{height:100%;border-radius:2px;background:var(--green)}
+.sp-prod-cnt{width:30px;text-align:right;font-weight:700;color:var(--text);font-size:10px}
+
+/* BL NAV BAR */
+.bl-nav{background:var(--s1);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.bl-nav-inner{max-width:1500px;width:100%;margin:0 auto;display:flex;align-items:center;gap:8px}
+.bl-btn{padding:6px 18px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid transparent;background:var(--s3);color:var(--muted);transition:background .15s,color .15s,border-color .15s;font-family:inherit;letter-spacing:.03em;white-space:nowrap}
+.bl-btn:hover{background:var(--s2);color:var(--text)}
+.bl-btn.active{background:#1C1C1C;color:#fff;border-color:#1C1C1C}
+
+/* TRADING VOLUME PERIOD SELECT */
+.tv-select{padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--s3);color:var(--text);font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;outline:none;transition:border-color .15s}
+.tv-select:hover,.tv-select:focus{border-color:var(--red)}
+
+/* ANALYTICS TABLE MARKET FILTER */
+.atbl-mkt-btn{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid transparent;background:var(--s2);color:var(--muted);transition:background .15s,color .15s,border-color .15s;font-family:inherit;letter-spacing:.03em;white-space:nowrap}
+.atbl-mkt-btn:hover{background:var(--s1);color:var(--text)}
+.atbl-mkt-btn.active{background:#1C1C1C;color:#fff;border-color:#1C1C1C}
+
+/* CLIENT TYPE FILTER PILLS */
+.clt-btn{padding:6px 18px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid transparent;background:var(--s3);color:var(--muted);transition:background .15s,color .15s,border-color .15s;font-family:inherit;letter-spacing:.03em;white-space:nowrap}
+.clt-btn:hover{background:var(--s2);color:var(--text)}
+.clt-btn.active{background:#1C1C1C;color:#fff;border-color:#1C1C1C}
+
+/* FOOTER */
+.ftr{text-align:center;padding:14px;color:var(--muted2);font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-logo">Аналитический фронт</div>
+    <div class="hdr-meta">
+      <div class="hdr-date" id="hdrDate"></div>
+      <div>Product Manager Dashboard</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <a class="btn" href="index.html">← Сменить роль</a>
+  </div>
+</div>
+
+<!-- BL NAVIGATION -->
+<div class="bl-nav">
+  <div class="bl-nav-inner">
+    <button class="bl-btn active" data-bl="" onclick="setBL('')">Все</button>
+    <button class="bl-btn" data-bl="Фондовый рынок" onclick="setBL('Фондовый рынок')">Фонд.</button>
+    <button class="bl-btn" data-bl="Срочный рынок"  onclick="setBL('Срочный рынок')">Сроч.</button>
+    <button class="bl-btn" data-bl="Валютный рынок" onclick="setBL('Валютный рынок')">Вал.</button>
+    <button class="bl-btn" data-bl="Денежный рынок" onclick="setBL('Денежный рынок')">Ден.</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- INCOME STRUCTURE TABLE + CHART -->
+  <div class="panel" style="margin-bottom:20px">
+    <div style="padding:18px 20px 10px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:3px">Доход</div>
+        <div id="incSubtitle" style="font-size:11px;color:var(--muted)">Годовой план vs факт YTD &nbsp;·&nbsp; Данные на 15 июня 2026</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:11px;font-weight:700;color:var(--muted)">С</span>
+          <select id="incFrom" onchange="updateIncomePeriod()" class="tv-select">
+            <option value="0">Июл 2025</option><option value="1">Авг 2025</option>
+            <option value="2">Сен 2025</option><option value="3">Окт 2025</option>
+            <option value="4">Ноя 2025</option><option value="5">Дек 2025</option>
+            <option value="6">Янв 2026</option><option value="7">Фев 2026</option>
+            <option value="8">Мар 2026</option><option value="9">Апр 2026</option>
+            <option value="10">Май 2026</option><option value="11">Июн 2026</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:11px;font-weight:700;color:var(--muted)">По</span>
+          <select id="incTo" onchange="updateIncomePeriod()" class="tv-select">
+            <option value="ytd">YTD</option>
+            <option value="0">Июл 2025</option><option value="1">Авг 2025</option>
+            <option value="2">Сен 2025</option><option value="3">Окт 2025</option>
+            <option value="4">Ноя 2025</option><option value="5">Дек 2025</option>
+            <option value="6">Янв 2026</option><option value="7">Фев 2026</option>
+            <option value="8">Мар 2026</option><option value="9">Апр 2026</option>
+            <option value="10">Май 2026</option><option value="11">Июн 2026</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:stretch">
+      <div style="flex:1;min-width:0;overflow-x:auto" id="incomeTableWrap"></div>
+      <div id="incomeChart" style="border-left:1px solid var(--border);padding:24px 28px;display:flex;align-items:center;justify-content:center;flex-shrink:0"></div>
+    </div>
+  </div>
+
+  <!-- TRADING VOLUME -->
+  <div class="panel" style="margin-bottom:20px">
+    <div style="padding:18px 20px 10px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:3px">Объем торгов</div>
+        <div id="tvSubtitle" style="font-size:11px;color:var(--muted)">Факт YTD &nbsp;·&nbsp; млрд ₽ &nbsp;·&nbsp; Данные на 15 июня 2026</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:11px;font-weight:700;color:var(--muted)">С</span>
+          <select id="tvFrom" onchange="updateTradingPeriod()" class="tv-select">
+            <option value="0">Июл 2025</option>
+            <option value="1">Авг 2025</option>
+            <option value="2">Сен 2025</option>
+            <option value="3">Окт 2025</option>
+            <option value="4">Ноя 2025</option>
+            <option value="5">Дек 2025</option>
+            <option value="6">Янв 2026</option>
+            <option value="7">Фев 2026</option>
+            <option value="8">Мар 2026</option>
+            <option value="9">Апр 2026</option>
+            <option value="10">Май 2026</option>
+            <option value="11">Июн 2026</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:11px;font-weight:700;color:var(--muted)">По</span>
+          <select id="tvTo" onchange="updateTradingPeriod()" class="tv-select">
+            <option value="ytd">YTD</option>
+            <option value="0">Июл 2025</option>
+            <option value="1">Авг 2025</option>
+            <option value="2">Сен 2025</option>
+            <option value="3">Окт 2025</option>
+            <option value="4">Ноя 2025</option>
+            <option value="5">Дек 2025</option>
+            <option value="6">Янв 2026</option>
+            <option value="7">Фев 2026</option>
+            <option value="8">Мар 2026</option>
+            <option value="9">Апр 2026</option>
+            <option value="10">Май 2026</option>
+            <option value="11">Июн 2026</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:stretch">
+      <div style="flex:1;min-width:0;overflow-x:auto">
+        <table class="atbl atbl-center" style="table-layout:fixed;width:100%">
+          <colgroup>
+            <col style="width:20%">
+            <col style="width:12%"><col style="width:12%">
+            <col style="width:12%"><col style="width:12%">
+            <col style="width:12%"><col style="width:12%">
+          </colgroup>
+          <thead>
+            <tr>
+              <th rowspan="2" style="padding-left:20px;vertical-align:bottom;text-align:left">Рынок</th>
+              <th colspan="2" style="text-align:center;font-size:9px;font-weight:900;letter-spacing:.08em;color:#ADADAD;border-bottom:2px solid #DADADA">Всего</th>
+              <th colspan="2" style="text-align:center;font-size:9px;font-weight:900;letter-spacing:.08em;color:#ADADAD;border-bottom:2px solid #C85A08">Корп. клиенты</th>
+              <th colspan="2" style="text-align:center;font-size:9px;font-weight:900;letter-spacing:.08em;color:#ADADAD;border-bottom:2px solid #2B63B8">Физ. лица</th>
+            </tr>
+            <tr>
+              <th>Факт YTD</th><th>% — Прирост</th>
+              <th>Факт YTD</th><th>% — Прирост</th>
+              <th>Факт YTD</th><th>% — Прирост</th>
+            </tr>
+          </thead>
+          <tbody id="tradingVolBody"></tbody>
+        </table>
+      </div>
+      <div id="tradingVolChart" style="border-left:1px solid var(--border);padding:24px 28px;display:flex;align-items:center;justify-content:center;flex-shrink:0"></div>
+    </div>
+  </div>
+
+  <!-- ACTIVE CLIENTS: two panels side by side -->
+  <div style="display:flex;gap:20px;align-items:stretch;margin-bottom:20px">
+
+    <div class="panel" style="flex:1;min-width:0">
+      <div style="padding:18px 20px 0">
+        <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:3px">Корп. клиенты</div>
+        <div style="font-size:11px;color:var(--muted)">Юридические лица по рынкам &nbsp;·&nbsp; Данные на 15 июня 2026</div>
+      </div>
+      <table class="atbl atbl-center" style="table-layout:fixed;width:100%">
+        <colgroup>
+          <col style="width:36%">
+          <col style="width:16%">
+          <col style="width:16%">
+          <col style="width:16%">
+          <col style="width:16%">
+        </colgroup>
+        <thead><tr>
+          <th style="padding-left:20px;text-align:left">Рынок</th>
+          <th>На начало года</th>
+          <th>Факт YTD</th>
+          <th>% — Прирост</th>
+          <th>Прогноз</th>
+        </tr></thead>
+        <tbody id="corpClientsBody"></tbody>
+      </table>
+    </div>
+
+    <div class="panel" style="flex:1;min-width:0">
+      <div style="padding:18px 20px 0">
+        <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:3px">Физические лица</div>
+        <div style="font-size:11px;color:var(--muted)">Розничные клиенты по рынкам &nbsp;·&nbsp; Данные на 15 июня 2026</div>
+      </div>
+      <table class="atbl atbl-center" style="table-layout:fixed;width:100%">
+        <colgroup>
+          <col style="width:36%">
+          <col style="width:16%">
+          <col style="width:16%">
+          <col style="width:16%">
+          <col style="width:16%">
+        </colgroup>
+        <thead><tr>
+          <th style="padding-left:20px;text-align:left">Рынок</th>
+          <th>На начало года</th>
+          <th>Факт YTD</th>
+          <th>% — Прирост</th>
+          <th>Прогноз</th>
+        </tr></thead>
+        <tbody id="retailClientsBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- AVG REVENUE PER CLIENT -->
+  <div class="panel" style="margin-bottom:20px">
+    <div style="padding:18px 20px 10px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:3px">Средний доход на клиента</div>
+        <div id="arpcSubtitle" style="font-size:11px;color:var(--muted)">Факт YTD &nbsp;·&nbsp; тыс. ₽ &nbsp;·&nbsp; Данные на 15 июня 2026</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:11px;font-weight:700;color:var(--muted)">С</span>
+          <select id="arpcFrom" onchange="updateArpcPeriod()" class="tv-select">
+            <option value="0">Июл 2025</option><option value="1">Авг 2025</option>
+            <option value="2">Сен 2025</option><option value="3">Окт 2025</option>
+            <option value="4">Ноя 2025</option><option value="5">Дек 2025</option>
+            <option value="6">Янв 2026</option><option value="7">Фев 2026</option>
+            <option value="8">Мар 2026</option><option value="9">Апр 2026</option>
+            <option value="10">Май 2026</option><option value="11">Июн 2026</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:11px;font-weight:700;color:var(--muted)">По</span>
+          <select id="arpcTo" onchange="updateArpcPeriod()" class="tv-select">
+            <option value="ytd">YTD</option>
+            <option value="0">Июл 2025</option><option value="1">Авг 2025</option>
+            <option value="2">Сен 2025</option><option value="3">Окт 2025</option>
+            <option value="4">Ноя 2025</option><option value="5">Дек 2025</option>
+            <option value="6">Янв 2026</option><option value="7">Фев 2026</option>
+            <option value="8">Мар 2026</option><option value="9">Апр 2026</option>
+            <option value="10">Май 2026</option><option value="11">Июн 2026</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div id="arpcTableWrap"></div>
+  </div>
+
+  <!-- MONTHLY REVENUE TABLE -->
+  <div class="panel" style="margin-bottom:20px">
+    <div style="padding:18px 20px 0">
+      <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:3px">Доход по месяцам</div>
+      <div style="font-size:11px;color:var(--muted)">Июл 2025 – Июн 2026 &nbsp;·&nbsp; млн ₽</div>
+    </div>
+    <div id="revenueMonthlyTable"></div>
+    <div style="padding:12px 20px 16px">
+      <button id="toggleChartBtn" onclick="toggleRevenueChart()"
+        style="padding:7px 20px;border-radius:20px;border:1px solid var(--border);background:var(--s3);color:var(--text);font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.03em;transition:background .15s,border-color .15s">
+        Показать график
+      </button>
+    </div>
+  </div>
+
+  <!-- MONTHLY REVENUE LINE CHART (hidden by default) -->
+  <div id="revenueChartPanel" class="panel" style="margin-bottom:20px;display:none">
+    <div style="padding:18px 20px 12px">
+      <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:3px">Динамика дохода по рынкам</div>
+      <div style="font-size:11px;color:var(--muted)">Июл 2025 – Июн 2026 &nbsp;·&nbsp; фактические данные &nbsp;·&nbsp; млн ₽</div>
+    </div>
+    <div style="padding:0 20px 16px" id="revenueLineChart"></div>
+  </div>
+
+  <!-- ADTV MONTHLY TABLE -->
+  <div class="panel" style="margin-bottom:20px">
+    <div style="padding:18px 20px 0">
+      <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:3px">Среднесуточный объем торгов</div>
+      <div style="font-size:11px;color:var(--muted)">Июл 2025 – Июн 2026 &nbsp;·&nbsp; млрд ₽/день</div>
+    </div>
+    <div id="adtvMonthlyTable"></div>
+    <div style="padding:12px 20px 16px">
+      <button id="toggleAdtvChartBtn" onclick="toggleAdtvChart()"
+        style="padding:7px 20px;border-radius:20px;border:1px solid var(--border);background:var(--s3);color:var(--text);font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.03em;transition:background .15s,border-color .15s">
+        Показать график
+      </button>
+    </div>
+  </div>
+
+  <!-- ADTV LINE CHART (hidden by default) -->
+  <div id="adtvChartPanel" class="panel" style="margin-bottom:20px;display:none">
+    <div style="padding:18px 20px 12px">
+      <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:3px">Динамика среднесуточного объема торгов</div>
+      <div style="font-size:11px;color:var(--muted)">Июл 2025 – Июн 2026 &nbsp;·&nbsp; млрд ₽/день</div>
+    </div>
+    <div style="padding:0 20px 16px" id="adtvLineChart"></div>
+  </div>
+
+  <!-- CLIENTS MONTHLY DYNAMICS TABLE -->
+  <div class="panel" style="margin-bottom:20px">
+    <div style="padding:18px 20px 12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:3px">Динамика количества активных клиентов</div>
+        <div style="font-size:11px;color:var(--muted)">Июл 2025 – Июн 2026 &nbsp;·&nbsp; клиентов по рынкам</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="clt-btn active" data-clt="corp" onclick="setClientType('corp')">Корп. клиенты</button>
+        <button class="clt-btn" data-clt="retail" onclick="setClientType('retail')">Физ. лица</button>
+      </div>
+    </div>
+    <div id="clientsMonthlyTable"></div>
+    <div style="padding:12px 20px 16px">
+      <button id="toggleClientsChartBtn" onclick="toggleClientsChart()"
+        style="padding:7px 20px;border-radius:20px;border:1px solid var(--border);background:var(--s3);color:var(--text);font-size:11px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.03em;transition:background .15s,border-color .15s">
+        Показать график
+      </button>
+    </div>
+  </div>
+
+  <!-- CLIENTS LINE CHART (hidden by default) -->
+  <div id="clientsChartPanel" class="panel" style="margin-bottom:20px;display:none">
+    <div style="padding:18px 20px 12px">
+      <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:3px">Динамика количества активных клиентов по рынкам</div>
+      <div id="clientsChartSubtitle" style="font-size:11px;color:var(--muted)">Июл 2025 – Июн 2026 &nbsp;·&nbsp; корп. клиенты</div>
+    </div>
+    <div style="padding:0 20px 16px" id="clientsLineChart"></div>
+  </div>
+
+  <!-- TOGGLE + FILTERS -->
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+    <div class="toggle-bar">
+      <button class="toggle-btn active" id="btnClient" onclick="setView('client')">👤 Клиент → Продукты</button>
+      <button class="toggle-btn" id="btnProduct" onclick="setView('product')">📦 Продукт → Клиенты</button>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <div style="font-size:9px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)">Сегмент:</div>
+      <div class="seg-tabs" style="margin-bottom:0">
+        <div class="seg-tab active" onclick="setSeg('')">Все</div>
+        <div class="seg-tab" onclick="setSeg('Банк')">Банки</div>
+        <div class="seg-tab" onclick="setSeg('Корпорат')">Корпораты</div>
+        <div class="seg-tab" onclick="setSeg('Брокер')">Брокеры</div>
+      </div>
+    </div>
+  </div>
+  <!-- VIEW: CLIENT × PRODUCT MATRIX -->
+  <div class="panel" id="viewClient">
+    <div class="panel-hdr">
+      <h2>Матрица: Клиент × Продукт</h2>
+      <span id="matrixInfo" style="font-size:11px;color:var(--muted)"></span>
+    </div>
+    <div class="panel-body" style="padding:0">
+      <div class="matrix-wrap">
+        <table class="matrix-tbl">
+          <thead id="matrixHead"></thead>
+          <tbody id="matrixBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW: PRODUCT CARDS -->
+  <div class="panel" id="viewProduct" style="display:none">
+    <div class="panel-hdr">
+      <h2>Продукт → Клиенты</h2>
+      <span style="font-size:11px;color:var(--muted)">Охват и комиссионный доход по продуктам</span>
+    </div>
+    <div class="panel-body">
+      <div class="prod-grid" id="prodCards"></div>
+    </div>
+  </div>
+
+  <!-- ANALYTICS TABLE -->
+  <div class="panel">
+    <div style="padding:12px 18px 0;border-bottom:1px solid var(--border);background:var(--s3)">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding-bottom:10px">
+        <h2 style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text)">Аналитика по продуктам</h2>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span id="atblSubtitle" style="font-size:11px;color:var(--muted)">Факт YTD</span>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:11px;font-weight:700;color:var(--muted)">С</span>
+            <select id="atblFrom" onchange="updateAtblPeriod()" class="tv-select">
+              <option value="0">Июл 2025</option><option value="1">Авг 2025</option>
+              <option value="2">Сен 2025</option><option value="3">Окт 2025</option>
+              <option value="4">Ноя 2025</option><option value="5">Дек 2025</option>
+              <option value="6">Янв 2026</option><option value="7">Фев 2026</option>
+              <option value="8">Мар 2026</option><option value="9">Апр 2026</option>
+              <option value="10">Май 2026</option><option value="11">Июн 2026</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:11px;font-weight:700;color:var(--muted)">По</span>
+            <select id="atblTo" onchange="updateAtblPeriod()" class="tv-select">
+              <option value="ytd">YTD</option>
+              <option value="0">Июл 2025</option><option value="1">Авг 2025</option>
+              <option value="2">Сен 2025</option><option value="3">Окт 2025</option>
+              <option value="4">Ноя 2025</option><option value="5">Дек 2025</option>
+              <option value="6">Янв 2026</option><option value="7">Фев 2026</option>
+              <option value="8">Мар 2026</option><option value="9">Апр 2026</option>
+              <option value="10">Май 2026</option><option value="11">Июн 2026</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;padding-bottom:10px">
+        <button class="atbl-mkt-btn active" data-atbl-mkt="" onclick="setAtblBL('')">Все рынки</button>
+        <button class="atbl-mkt-btn" data-atbl-mkt="Фондовый рынок" onclick="setAtblBL('Фондовый рынок')" style="color:#2B63B8">Фондовый</button>
+        <button class="atbl-mkt-btn" data-atbl-mkt="Срочный рынок" onclick="setAtblBL('Срочный рынок')" style="color:#187A40">Срочный</button>
+        <button class="atbl-mkt-btn" data-atbl-mkt="Валютный рынок" onclick="setAtblBL('Валютный рынок')" style="color:#C85A08">Валютный</button>
+        <button class="atbl-mkt-btn" data-atbl-mkt="Денежный рынок" onclick="setAtblBL('Денежный рынок')" style="color:#6B35C8">Денежный</button>
+      </div>
+    </div>
+    <div class="panel-body" style="padding:0">
+      <table class="atbl">
+        <thead>
+          <tr>
+            <th onclick="sortAtbl('name')">Продукт <span class="sort-ico" id="as-name"></span></th>
+            <th onclick="sortAtbl('clients')">Клиентов <span class="sort-ico" id="as-clients"></span></th>
+            <th onclick="sortAtbl('pen')">Проникновение <span class="sort-ico" id="as-pen"></span></th>
+            <th onclick="sortAtbl('comm')" id="atblCommHdr"><span id="atblCommLabel">Комиссия YTD</span> <span class="sort-ico" id="as-comm"></span></th>
+            <th>Банки</th>
+            <th>Корпораты</th>
+            <th>Брокеры</th>
+            <th onclick="sortAtbl('potential')">Потенциал (кросс-продажи) <span class="sort-ico" id="as-potential"></span></th>
+          </tr>
+        </thead>
+        <tbody id="atblBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SEGMENT PENETRATION -->
+  <div class="panel">
+    <div class="panel-hdr">
+      <h2>Проникновение по сегментам</h2>
+    </div>
+    <div class="panel-body">
+      <div class="seg-pen" id="segPen"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="ftr">Аналитический фронт &nbsp;·&nbsp; Product Manager &nbsp;·&nbsp; Данные тестовые &nbsp;·&nbsp; Обновлено: <span id="updTime"></span></div>
+
+<script>
+// ── DATA (shared with RM dashboard) ──────────────────────────
+const ALL_PRODUCTS=['Продукт 1','Продукт 2','Продукт 3','Продукт 4','Продукт 5','Продукт 6','Продукт 7','Продукт 8','Продукт 9','Продукт 10','Продукт 11','Продукт 12','Продукт 13'];
+const BUSINESS_LINES=[
+  {name:'Фондовый рынок', short:'Фондовый', color:'#2B63B8', products:['Продукт 1','Продукт 2','Продукт 3']},
+  {name:'Срочный рынок',  short:'Срочный',  color:'#187A40', products:['Продукт 4','Продукт 5','Продукт 6','Продукт 7']},
+  {name:'Валютный рынок', short:'Валютный', color:'#C85A08', products:['Продукт 8','Продукт 9','Продукт 10']},
+  {name:'Денежный рынок', short:'Денежный', color:'#6B35C8', products:['Продукт 11','Продукт 12','Продукт 13']},
+];
+
+// Revenue weights per product
+const PROD_WEIGHTS={
+  'Продукт 1':15,'Продукт 2':35,'Продукт 3':20,
+  'Продукт 4':18,'Продукт 5':22,'Продукт 6':16,'Продукт 7':12,
+  'Продукт 8':25,'Продукт 9':18,'Продукт 10':10,
+  'Продукт 11':20,'Продукт 12':15,'Продукт 13':10
+};
+
+const clients=[
+  {id:1,  name:'ПАО "СеверКомБанк"',              seg:'Банк',     aum:48000000000, commMTD:28800000, products:['Продукт 2','Продукт 3','Продукт 4','Продукт 5','Продукт 8','Продукт 11','Продукт 12']},
+  {id:2,  name:'АО "УральскийБизнесБанк"',         seg:'Банк',     aum:21000000000, commMTD:6300000,  products:['Продукт 2','Продукт 3','Продукт 11']},
+  {id:3,  name:'ПАО "ВосточныйФинБанк"',           seg:'Банк',     aum:35000000000, commMTD:21000000, products:['Продукт 2','Продукт 3','Продукт 4','Продукт 5','Продукт 6','Продукт 7','Продукт 11']},
+  {id:4,  name:'АО "МежТоргБанк"',                 seg:'Банк',     aum:12000000000, commMTD:3600000,  products:['Продукт 2','Продукт 5']},
+  {id:5,  name:'ПАО "СибирскийНародныйБанк"',      seg:'Банк',     aum:52000000000, commMTD:36400000, products:['Продукт 2','Продукт 3','Продукт 4','Продукт 5','Продукт 6','Продукт 11','Продукт 12']},
+  {id:6,  name:'АО "КредитИнвестБанк"',            seg:'Банк',     aum:8000000000,  commMTD:2400000,  products:['Продукт 2','Продукт 3','Продукт 11']},
+  {id:7,  name:'ПАО "ПоволжскийБанк"',             seg:'Банк',     aum:18000000000, commMTD:9000000,  products:['Продукт 2','Продукт 3','Продукт 4','Продукт 5','Продукт 11']},
+  {id:8,  name:'АО "ДальнеВосточныйБанк"',         seg:'Банк',     aum:9500000000,  commMTD:950000,   products:['Продукт 3']},
+  {id:9,  name:'ПАО "ЦентрКапиталБанк"',           seg:'Банк',     aum:28000000000, commMTD:16800000, products:['Продукт 2','Продукт 3','Продукт 4','Продукт 6','Продукт 11']},
+  {id:10, name:'АО "РегионИнвестБанк"',            seg:'Банк',     aum:6500000000,  commMTD:1300000,  products:['Продукт 2','Продукт 3']},
+  {id:11, name:'ПАО "МеталлИнвест Групп"',         seg:'Корпорат', aum:9000000000,  commMTD:4500000,  products:['Продукт 2','Продукт 4','Продукт 5','Продукт 6','Продукт 8']},
+  {id:12, name:'АО "НефтеХим Холдинг"',            seg:'Корпорат', aum:13200000000, commMTD:7920000,  products:['Продукт 2','Продукт 5','Продукт 6','Продукт 7','Продукт 8','Продукт 9']},
+  {id:13, name:'ПАО "АгроПром Капитал"',           seg:'Корпорат', aum:4500000000,  commMTD:1350000,  products:['Продукт 2','Продукт 5','Продукт 8']},
+  {id:14, name:'АО "ТехноСтрой Девелопмент"',      seg:'Корпорат', aum:2880000000,  commMTD:288000,   products:['Продукт 2']},
+  {id:15, name:'ПАО "ЭнергоТрейдинг"',             seg:'Корпорат', aum:10800000000, commMTD:5400000,  products:['Продукт 2','Продукт 4','Продукт 5','Продукт 6','Продукт 7','Продукт 8','Продукт 9']},
+  {id:16, name:'АО "РосФармацевтика"',             seg:'Корпорат', aum:1920000000,  commMTD:384000,   products:['Продукт 2','Продукт 5','Продукт 8']},
+  {id:17, name:'ПАО "МашиноСтрой Концерн"',        seg:'Корпорат', aum:6600000000,  commMTD:1980000,  products:['Продукт 2','Продукт 6','Продукт 8']},
+  {id:18, name:'АО "ТрансЛогистик"',               seg:'Корпорат', aum:3360000000,  commMTD:1008000,  products:['Продукт 2','Продукт 4','Продукт 5','Продукт 8']},
+  {id:19, name:'ПАО "РитейлГрупп"',                seg:'Корпорат', aum:5340000000,  commMTD:1602000,  products:['Продукт 2','Продукт 4','Продукт 5','Продукт 8']},
+  {id:20, name:'АО "ГорноДобывающий Концерн"',     seg:'Корпорат', aum:9900000000,  commMTD:4950000,  products:['Продукт 2','Продукт 5','Продукт 6','Продукт 8']},
+  {id:21, name:'ПАО "ПищепромХолдинг"',            seg:'Корпорат', aum:2520000000,  commMTD:252000,   products:['Продукт 1']},
+  {id:22, name:'АО "ЦифровыеРешения Холдинг"',     seg:'Корпорат', aum:1680000000,  commMTD:504000,   products:['Продукт 1','Продукт 2']},
+  {id:23, name:'ООО "АльфаБрокер"',                seg:'Брокер',   aum:1920000000,  commMTD:960000,   products:['Продукт 1','Продукт 2','Продукт 3','Продукт 6']},
+  {id:24, name:'АО "ПрофИнвест"',                  seg:'Брокер',   aum:1400000000,  commMTD:700000,   products:['Продукт 1','Продукт 2','Продукт 3','Продукт 4','Продукт 5','Продукт 6']},
+  {id:25, name:'ООО "МаркетТрейд Секьюритиз"',     seg:'Брокер',   aum:880000000,   commMTD:264000,   products:['Продукт 1','Продукт 2']},
+  {id:26, name:'АО "СтратегияКапитал"',            seg:'Брокер',   aum:2080000000,  commMTD:832000,   products:['Продукт 1','Продукт 2','Продукт 3','Продукт 6']},
+  {id:27, name:'ООО "ФинансПартнер"',              seg:'Брокер',   aum:600000000,   commMTD:90000,    products:['Продукт 1']},
+  {id:28, name:'АО "ЮнионСекьюритиз"',             seg:'Брокер',   aum:1240000000,  commMTD:496000,   products:['Продукт 1','Продукт 2','Продукт 6']},
+  {id:29, name:'ООО "ВекторТрейд"',                seg:'Брокер',   aum:720000000,   commMTD:72000,    products:['Продукт 2']},
+  {id:30, name:'АО "ПремьерИнвест"',               seg:'Брокер',   aum:1680000000,  commMTD:672000,   products:['Продукт 1','Продукт 2','Продукт 3','Продукт 6']},
+];
+
+// ── HELPERS ───────────────────────────────────────────────────
+function getProductRevenue(client, product){
+  if(!client.products.includes(product))return 0;
+  const totalW=client.products.reduce((s,p)=>s+(PROD_WEIGHTS[p]||10),0);
+  return client.commMTD*(PROD_WEIGHTS[product]/totalW);
+}
+function fmt(n){
+  if(n>=1e9)return (n/1e9).toFixed(2).replace(/\.?0+$/,'')+'&nbsp;млрд ₽';
+  if(n>=1e6)return (n/1e6).toFixed(1)+'&nbsp;млн ₽';
+  if(n>=1e3)return (n/1e3).toFixed(0)+'&nbsp;тыс ₽';
+  return n+'&nbsp;₽';
+}
+function fmtM(n){return (n/1e6).toFixed(1)+' млн ₽'}
+const segBadge=s=>s==='Банк'?'b-bank':s==='Корпорат'?'b-corp':'b-broker';
+
+// ── STATE ─────────────────────────────────────────────────────
+let currentView='client';
+let currentSeg='';
+let currentBL='';
+let atblSort={col:'clients',asc:false};
+let atblBL='';
+let atblFrom=0;
+let atblTo='ytd';
+
+function filteredClients(){
+  return currentSeg?clients.filter(c=>c.seg===currentSeg):clients;
+}
+function filteredProducts(){
+  if(!currentBL)return ALL_PRODUCTS;
+  const bl=BUSINESS_LINES.find(b=>b.name===currentBL);
+  return bl?bl.products:ALL_PRODUCTS;
+}
+function setBL(bl){
+  currentBL=bl;
+  document.querySelectorAll('.bl-btn').forEach(t=>t.classList.toggle('active',t.dataset.bl===bl));
+  renderAll();
+}
+
+// ── KPI ───────────────────────────────────────────────────────
+function renderKPI(){
+  const all=clients;
+  const avgProd=(all.reduce((s,c)=>s+c.products.length,0)/all.length).toFixed(1);
+  const single=all.filter(c=>c.products.length===1).length;
+  // Most popular product
+  const counts={};
+  ALL_PRODUCTS.forEach(p=>{counts[p]=all.filter(c=>c.products.includes(p)).length;});
+  const topProd=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+  // Cross-sell potential
+  const potential=all.reduce((s,c)=>s+(ALL_PRODUCTS.length-c.products.length),0);
+
+  document.getElementById('kpiRow').innerHTML=`
+  <div class="kpi">
+    <div class="lbl">Продуктов в линейке</div>
+    <div class="val">${ALL_PRODUCTS.length}</div>
+    <div class="sub">Активных продуктов в портфеле</div>
+  </div>
+  <div class="kpi">
+    <div class="lbl">Среднее проникновение</div>
+    <div class="val">${avgProd}</div>
+    <div class="sub">Продуктов на клиента</div>
+    <div class="bar"><div class="fill" style="width:${parseFloat(avgProd)/ALL_PRODUCTS.length*100}%"></div></div>
+  </div>
+  <div class="kpi">
+    <div class="lbl">Клиентов с 1 продуктом</div>
+    <div class="val" style="color:var(--red)">${single}</div>
+    <div class="sub">Риск оттока — уязвимая база</div>
+  </div>
+  <div class="kpi">
+    <div class="lbl">Топ продукт по охвату</div>
+    <div class="val">${topProd[0].replace('Продукт ','П')}</div>
+    <div class="sub">${topProd[1]} из ${all.length} клиентов (${Math.round(topProd[1]/all.length*100)}%)</div>
+    <div class="bar"><div class="fill" style="width:${topProd[1]/all.length*100}%"></div></div>
+  </div>
+  <div class="kpi">
+    <div class="lbl">Потенциал кросс-продаж</div>
+    <div class="val" style="color:var(--green)">${potential}</div>
+    <div class="sub">Клиент × незакрытых продуктов</div>
+  </div>`;
+}
+
+// ── MATRIX VIEW ───────────────────────────────────────────────
+function renderMatrix(){
+  const data=filteredClients();
+  document.getElementById('matrixInfo').textContent=`${data.length} клиентов · ${ALL_PRODUCTS.length} продуктов · ${BUSINESS_LINES.length} рынка`;
+
+  // Count clients per product (in filtered set)
+  const prodCounts={};
+  ALL_PRODUCTS.forEach(p=>{prodCounts[p]=data.filter(c=>c.products.includes(p)).length;});
+
+  // 2-row header: BL spanning + individual products
+  const headRow1=`<tr>
+    <th class="th-client" rowspan="2">Клиент</th>
+    <th class="th-seg" rowspan="2">Сегмент</th>
+    ${BUSINESS_LINES.map(bl=>`<th colspan="${bl.products.length}" style="text-align:center;font-size:9px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:${bl.color};border-bottom:2px solid ${bl.color};padding-bottom:4px">${bl.name}</th>`).join('')}
+    <th rowspan="2">Продуктов</th>
+  </tr>`;
+  const headRow2=`<tr>
+    ${BUSINESS_LINES.flatMap(bl=>bl.products.map(p=>`<th><div class="th-prod-name">${p.replace('Продукт ','П')}</div><div class="th-prod-cnt">${prodCounts[p]}</div></th>`)).join('')}
+  </tr>`;
+  document.getElementById('matrixHead').innerHTML=headRow1+headRow2;
+
+  // Group by segment
+  const segs=currentSeg?[currentSeg]:['Банк','Корпорат','Брокер'];
+  const segNames={'Банк':'Банки','Корпорат':'Корпораты','Брокер':'Брокеры'};
+  let rows='';
+  segs.forEach(seg=>{
+    const segClients=data.filter(c=>c.seg===seg);
+    if(!segClients.length)return;
+    if(!currentSeg){
+      rows+=`<tr class="seg-divider"><td colspan="${ALL_PRODUCTS.length+3}">${segNames[seg]} (${segClients.length})</td></tr>`;
+    }
+    segClients.forEach(c=>{
+      const cells=ALL_PRODUCTS.map(p=>
+        c.products.includes(p)
+          ?`<td><span class="cell-yes" title="${p} подключён">✓</span></td>`
+          :`<td><span class="cell-no" title="${p} — потенциал">·</span></td>`
+      ).join('');
+      rows+=`<tr>
+        <td class="td-client">${c.name}</td>
+        <td class="td-seg"><span class="badge ${segBadge(c.seg)}">${c.seg}</span></td>
+        ${cells}
+        <td><span class="client-total">${c.products.length} / ${ALL_PRODUCTS.length}</span></td>
+      </tr>`;
+    });
+  });
+  document.getElementById('matrixBody').innerHTML=rows;
+}
+
+// ── PRODUCT CARDS VIEW ────────────────────────────────────────
+function renderProductCards(){
+  const data=filteredClients();
+  const total=data.length;
+  const visibleBLs=currentBL?BUSINESS_LINES.filter(b=>b.name===currentBL):BUSINESS_LINES;
+  let html2='';
+  visibleBLs.forEach(bl=>{
+    html2+=`<div style="grid-column:1/-1;margin-top:12px;margin-bottom:4px">
+      <div style="font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:${bl.color};border-left:3px solid ${bl.color};padding-left:10px">${bl.name}</div>
+    </div>`;
+    html2+=bl.products.map(p=>{
+      const withProd=data.filter(c=>c.products.includes(p));
+      const pct=total?Math.round(withProd.length/total*100):0;
+      const comm=withProd.reduce((s,c)=>s+getProductRevenue(c,p),0);
+      const banks=withProd.filter(c=>c.seg==='Банк').length;
+      const corps=withProd.filter(c=>c.seg==='Корпорат').length;
+      const brokers=withProd.filter(c=>c.seg==='Брокер').length;
+      const without=data.filter(c=>!c.products.includes(p));
+      return `<div class="prod-card" style="border-top:2px solid ${bl.color}">
+        <div class="prod-card-name">${p}</div>
+        <div class="prod-card-clients">${withProd.length} <span style="font-size:13px;font-weight:500;color:var(--muted)">/ ${total}</span></div>
+        <div class="prod-card-sub">клиентов · охват ${pct}%</div>
+        <div class="pbar"><div class="pbar-fill" style="width:${pct}%;background:${bl.color}"></div></div>
+        <div class="seg-breakdown">
+          ${banks?`<span class="seg-pill sp-bank">Банки: ${banks}</span>`:''}
+          ${corps?`<span class="seg-pill sp-corp">Корп: ${corps}</span>`:''}
+          ${brokers?`<span class="seg-pill sp-brok">Бркр: ${brokers}</span>`:''}
+        </div>
+        <div class="prod-comm">Комиссия MTD: <b>${fmt(Math.round(comm))}</b></div>
+        ${without.length?`<div class="potential">↗ Потенциал: ${without.length} клиентов</div>`:''}
+      </div>`;
+    }).join('');
+  });
+  document.getElementById('prodCards').innerHTML=html2;
+}
+function html(s){return s} // pass-through for innerHTML
+
+// ── ANALYTICS TABLE ───────────────────────────────────────────
+function filteredAtblProducts(){
+  if(!atblBL)return ALL_PRODUCTS;
+  const bl=BUSINESS_LINES.find(b=>b.name===atblBL);
+  return bl?bl.products:ALL_PRODUCTS;
+}
+function getProductPeriodFactor(blName){
+  const mult=BL_MULT_12[blName]||Array(12).fill(1);
+  const mSum=mult.reduce((s,v)=>s+v,0);
+  if(!mSum)return 0;
+  const toIdx=atblTo==='ytd'?11:atblTo;
+  return 12*mult.slice(atblFrom,toIdx+1).reduce((s,v)=>s+v,0)/mSum;
+}
+function setAtblBL(bl){
+  atblBL=bl;
+  document.querySelectorAll('.atbl-mkt-btn').forEach(t=>
+    t.classList.toggle('active',(t.dataset.atblMkt||'')===bl)
+  );
+  renderAtbl();
+}
+function updateAtblPeriod(){
+  atblFrom=parseInt(document.getElementById('atblFrom').value);
+  const toVal=document.getElementById('atblTo').value;
+  atblTo=toVal==='ytd'?'ytd':parseInt(toVal);
+  if(atblTo!=='ytd'&&atblTo<atblFrom){
+    document.getElementById('atblTo').value=atblFrom;
+    atblTo=atblFrom;
+  }
+  const fromLbl=MONTHS_SHORT[atblFrom]+(atblFrom<YEAR_SPLIT?' 2025':' 2026');
+  const toLbl=atblTo==='ytd'?'YTD':MONTHS_SHORT[atblTo]+(atblTo<YEAR_SPLIT?' 2025':' 2026');
+  const sub=document.getElementById('atblSubtitle');
+  if(sub)sub.textContent=atblTo==='ytd'?'Факт YTD':`${fromLbl} — ${toLbl}`;
+  const lbl=document.getElementById('atblCommLabel');
+  if(lbl)lbl.textContent=atblTo==='ytd'?'Комиссия YTD':'Доход за период';
+  renderAtbl();
+}
+function renderAtbl(){
+  const data=filteredClients();
+  const total=data.length;
+  const prods=filteredAtblProducts();
+  let rows=prods.map(p=>{
+    const bl=BUSINESS_LINES.find(b=>b.products.includes(p));
+    const factor=bl?getProductPeriodFactor(bl.name):YTD_MONTHS;
+    const withProd=data.filter(c=>c.products.includes(p));
+    const pct=total?withProd.length/total*100:0;
+    const comm=withProd.reduce((s,c)=>s+getProductRevenue(c,p)*factor,0);
+    const banks=withProd.filter(c=>c.seg==='Банк').length;
+    const corps=withProd.filter(c=>c.seg==='Корпорат').length;
+    const brokers=withProd.filter(c=>c.seg==='Брокер').length;
+    const potential=data.filter(c=>!c.products.includes(p)).length;
+    return {name:p,bl,clients:withProd.length,pen:pct,comm,banks,corps,brokers,potential};
+  });
+  rows.sort((a,b)=>atblSort.asc?a[atblSort.col]-b[atblSort.col]||a.name.localeCompare(b.name):b[atblSort.col]-a[atblSort.col]||a.name.localeCompare(b.name));
+  if(atblSort.col==='name') rows.sort((a,b)=>atblSort.asc?a.name.localeCompare(b.name,'ru'):b.name.localeCompare(a.name,'ru'));
+
+  // Update sort icons
+  ['name','clients','pen','comm','potential'].forEach(c=>{
+    const el=document.getElementById('as-'+c);
+    if(el)el.textContent=atblSort.col===c?(atblSort.asc?' ↑':' ↓'):'';
+  });
+
+  const maxComm=Math.max(...rows.map(r=>r.comm),1);
+  document.getElementById('atblBody').innerHTML=rows.map(r=>`
+    <tr>
+      <td style="font-weight:700;border-left:3px solid ${r.bl?r.bl.color:'#ccc'}">&nbsp;${r.name}<div style="font-size:9px;color:${r.bl?r.bl.color:'var(--muted)'};font-weight:600;margin-top:1px">${r.bl?r.bl.name:''}</div></td>
+      <td>
+        <span style="font-weight:700">${r.clients}</span>
+        <span style="color:var(--muted);font-size:10px"> из ${total}</span>
+      </td>
+      <td>
+        <div style="font-weight:700;font-size:12px">${r.pen.toFixed(1)}%</div>
+        <div class="pen-bar"><div class="pen-fill" style="width:${r.pen}%;background:${r.pen>=70?'var(--green)':r.pen>=40?'var(--orange)':'var(--red)'}"></div></div>
+      </td>
+      <td>
+        <div style="font-weight:700;font-size:12px">${fmtM(r.comm)}</div>
+        <div class="pen-bar"><div class="pen-fill" style="width:${r.comm/maxComm*100}%;background:var(--blue)"></div></div>
+      </td>
+      <td style="font-size:11px;color:#6B35C8;font-weight:600">${r.banks}</td>
+      <td style="font-size:11px;color:var(--green);font-weight:600">${r.corps}</td>
+      <td style="font-size:11px;color:var(--orange);font-weight:600">${r.brokers}</td>
+      <td>
+        <span style="font-weight:700;color:${r.potential>15?'var(--green)':'var(--muted)'}">${r.potential}</span>
+        <span style="font-size:10px;color:var(--muted)"> клиентов</span>
+      </td>
+    </tr>`).join('');
+}
+function sortAtbl(col){
+  if(atblSort.col===col){atblSort.asc=!atblSort.asc;}else{atblSort.col=col;atblSort.asc=false;}
+  renderAtbl();
+}
+
+// ── SEGMENT PENETRATION ───────────────────────────────────────
+function renderSegPen(){
+  const segs=[
+    {key:'Банк',   label:'Банки',      cls:'sp-bank'},
+    {key:'Корпорат',label:'Корпораты', cls:'sp-corp'},
+    {key:'Брокер', label:'Брокеры',    cls:'sp-brok'},
+  ];
+  const prods=filteredProducts();
+  document.getElementById('segPen').innerHTML=segs.map(({key,label,cls})=>{
+    const sc=clients.filter(c=>c.seg===key);
+    const avg=(sc.reduce((s,c)=>s+c.products.length,0)/sc.length).toFixed(1);
+    const prodRows=prods.map(p=>{
+      const bl=BUSINESS_LINES.find(b=>b.products.includes(p));
+      const cnt=sc.filter(c=>c.products.includes(p)).length;
+      return {p,cnt,pct:cnt/sc.length*100,blColor:bl?bl.color:'#888'};
+    }).sort((a,b)=>b.cnt-a.cnt);
+    return `<div class="sp-card">
+      <div class="sp-title ${cls}" style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em">${label}</div>
+      <div class="sp-avg">${avg}</div>
+      <div class="sp-avg-lbl">среднее продуктов на клиента &nbsp;·&nbsp; ${sc.length} клиентов</div>
+      ${prodRows.map(({p,cnt,pct,blColor})=>`
+        <div class="sp-prod-row">
+          <div class="sp-prod-name" style="font-size:10px;color:${blColor}">${p.replace('Продукт ','П')}</div>
+          <div class="sp-prod-bar"><div class="sp-prod-fill" style="width:${pct}%;background:${blColor}"></div></div>
+          <div class="sp-prod-cnt">${cnt}</div>
+        </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+// ── VIEW / FILTER CONTROL ─────────────────────────────────────
+function setView(v){
+  currentView=v;
+  document.getElementById('viewClient').style.display=v==='client'?'':'none';
+  document.getElementById('viewProduct').style.display=v==='product'?'':'none';
+  document.getElementById('btnClient').classList.toggle('active',v==='client');
+  document.getElementById('btnProduct').classList.toggle('active',v==='product');
+  renderCurrentView();
+}
+function setSeg(s){
+  currentSeg=s;
+  document.querySelectorAll('.seg-tab:not(.bl-tab)').forEach(t=>t.classList.remove('active'));
+  const labels={'':'Все','Банк':'Банки','Корпорат':'Корпораты','Брокер':'Брокеры'};
+  document.querySelectorAll('.seg-tab:not(.bl-tab)').forEach(t=>{if(t.textContent===labels[s])t.classList.add('active');});
+  renderCurrentView();
+  renderAtbl();
+  renderSegPen();
+}
+function renderCurrentView(){
+  if(currentView==='client')renderMatrix();
+  else renderProductCards();
+}
+
+// ── MARKET ACTIVITY ──────────────────────────────────────────
+const BL_TRENDS={
+  'Фондовый рынок':{v:8,   txt:'+8%'},
+  'Срочный рынок': {v:-5,  txt:'−5%'},
+  'Валютный рынок':{v:15,  txt:'+15%'},
+  'Денежный рынок':{v:3,   txt:'+3%'},
+};
+const YTD_MONTHS=5.5;          // Jan 1 – Jun 15
+const YEAR_PCT=YTD_MONTHS/12;  // ~45.8 % года пройдено
+// Годовые планы по доходу на рынок (сумма = 2 600 млн ₽)
+const BL_PLANS={
+  'Фондовый рынок':1040000000,
+  'Срочный рынок':  650000000,
+  'Валютный рынок': 520000000,
+  'Денежный рынок': 390000000,
+};
+
+function renderMarketActivity(){
+  document.getElementById('marketActivity').innerHTML=BUSINESS_LINES.map(bl=>{
+    const blClients=clients.filter(c=>c.products.some(p=>bl.products.includes(p)));
+    // Proportional share via product-count ratio per client
+    const oborot=blClients.reduce((s,c)=>{
+      const k=c.products.filter(p=>bl.products.includes(p)).length;
+      return s+c.aum*(k/c.products.length);
+    },0);
+    const dohod=blClients.reduce((s,c)=>{
+      const k=c.products.filter(p=>bl.products.includes(p)).length;
+      return s+c.commMTD*YTD_MONTHS*(k/c.products.length);
+    },0);
+    const trend=BL_TRENDS[bl.name]||{v:0,txt:'0%'};
+    const tColor=trend.v>=0?'var(--green)':'var(--red)';
+    return `<tr>
+      <td style="padding-left:20px"><span style="font-weight:700;color:${bl.color}">${bl.name}</span></td>
+      <td><span style="font-size:16px;font-weight:800;color:var(--blue)">${blClients.length}</span></td>
+      <td style="font-weight:600">${fmt(Math.round(oborot))}</td>
+      <td style="font-weight:600">${fmt(Math.round(dohod))}</td>
+      <td><span style="font-size:13px;font-weight:800;color:${tColor}">${trend.txt}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── INCOME STRUCTURE ─────────────────────────────────────────
+function _blFact(bl){
+  const blClients=clients.filter(c=>c.products.some(p=>bl.products.includes(p)));
+  return blClients.reduce((s,c)=>{
+    const k=c.products.filter(p=>bl.products.includes(p)).length;
+    return s+c.commMTD*YTD_MONTHS*(k/c.products.length);
+  },0);
+}
+function _blMonthly(bl){
+  const fact=_blFact(bl);
+  const annual=YEAR_PCT>0?fact/YEAR_PCT:0;
+  const mult=BL_MULT_12[bl.name]||Array(12).fill(1);
+  const mSum=mult.reduce((s,v)=>s+v,0);
+  return mult.map(m=>mSum>0?annual*m/mSum:0);
+}
+function renderIncomeStructure(){
+  const activeBLs=currentBL?BUSINESS_LINES.filter(b=>b.name===currentBL):BUSINESS_LINES;
+  const isYTD=incTo==='ytd';
+  const toIdx=isYTD?11:incTo;
+  const len=toIdx-incFrom+1;
+  const prevTo=incFrom-1;
+  const prevFrom=incFrom-len;
+
+  const fmtPct=(cur,prev)=>{
+    if(prev==null||prev===0)return '<span style="color:var(--muted)">—</span>';
+    const p=(cur-prev)/prev*100;
+    const sign=p>0?'+':'';
+    const color=p>0?'var(--green)':p<0?'var(--red)':'var(--muted)';
+    return `<span style="font-weight:800;color:${color}">${sign}${p.toFixed(1)}%</span>`;
+  };
+
+  let thead,rows;
+  if(isYTD){
+    thead=`<thead><tr>
+      <th style="padding-left:20px;text-align:left">Рынок</th>
+      <th style="text-align:center">План (год)</th>
+      <th style="text-align:center">Факт YTD</th>
+      <th style="text-align:center">% выполнения</th>
+      <th style="text-align:center">Прогноз (год)</th>
+    </tr></thead>`;
+    rows=activeBLs.map(bl=>{
+      const fact=_blFact(bl);
+      const plan=BL_PLANS[bl.name]||0;
+      const pct=plan>0?fact/plan*100:0;
+      const forecast=YEAR_PCT>0?fact/YEAR_PCT:0;
+      const pctExpected=YEAR_PCT*100;
+      const pctColor=pct>=pctExpected*0.95?'var(--green)':pct>=pctExpected*0.80?'var(--orange)':'var(--red)';
+      return `<tr>
+        <td style="font-weight:700;color:${bl.color};padding-left:20px">${bl.name}</td>
+        <td style="text-align:center">${fmt(plan)}</td>
+        <td style="text-align:center">${fmt(Math.round(fact))}</td>
+        <td style="text-align:center"><span style="font-weight:800;color:${pctColor}">${pct.toFixed(1)}%</span></td>
+        <td style="text-align:center;color:var(--muted)">${fmt(Math.round(forecast))}</td>
+      </tr>`;
+    }).join('');
+  } else {
+    thead=`<thead><tr>
+      <th style="padding-left:20px;text-align:left">Рынок</th>
+      <th style="text-align:center">Факт за период</th>
+      <th style="text-align:center">% к пред. периоду</th>
+    </tr></thead>`;
+    rows=activeBLs.map(bl=>{
+      const monthly=_blMonthly(bl);
+      const cur=monthly.slice(incFrom,toIdx+1).reduce((s,v)=>s+v,0);
+      const prev=prevFrom>=0?monthly.slice(prevFrom,prevTo+1).reduce((s,v)=>s+v,0):null;
+      return `<tr>
+        <td style="font-weight:700;color:${bl.color};padding-left:20px">${bl.name}</td>
+        <td style="text-align:center">${fmt(Math.round(cur))}</td>
+        <td style="text-align:center">${fmtPct(cur,prev)}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  document.getElementById('incomeTableWrap').innerHTML=`
+    <table class="atbl" style="table-layout:fixed;width:100%">
+      ${thead}<tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ── INCOME DONUT CHART ───────────────────────────────────────
+function renderIncomeChart(){
+  const activeBLs=currentBL?BUSINESS_LINES.filter(b=>b.name===currentBL):BUSINESS_LINES;
+  const isYTD=incTo==='ytd';
+  const toIdx=isYTD?11:incTo;
+
+  const data=activeBLs.map(bl=>{
+    const factYTD=_blFact(bl);
+    let fact;
+    if(isYTD){
+      fact=factYTD;
+    } else {
+      const monthly=_blMonthly(bl);
+      fact=monthly.slice(incFrom,toIdx+1).reduce((s,v)=>s+v,0);
+    }
+    return {bl,fact};
+  });
+  const total=data.reduce((s,d)=>s+d.fact,0);
+
+  const cx=100,cy=100,r=68,sw=28;
+  const C=2*Math.PI*r;
+  let cum=0;
+  const circles=data.map(d=>{
+    const pct=total>0?d.fact/total:0;
+    const arc=pct*C;
+    const dashOffset=C*(0.25-cum);
+    cum+=pct;
+    return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none"
+      stroke="${d.bl.color}" stroke-width="${sw}"
+      stroke-dasharray="${arc.toFixed(2)} ${C.toFixed(2)}"
+      stroke-dashoffset="${dashOffset.toFixed(2)}"/>`;
+  }).join('');
+
+  const legend=data.map(d=>{
+    const pct=total>0?d.fact/total*100:0;
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <div style="width:10px;height:10px;border-radius:50%;background:${d.bl.color};flex-shrink:0"></div>
+      <div style="font-size:11px;color:var(--muted);flex:1">${d.bl.short}</div>
+      <div style="font-size:12px;font-weight:800;color:var(--text)">${pct.toFixed(1)}%</div>
+    </div>`;
+  }).join('');
+
+  const centerLbl=isYTD?'ДОХОД YTD':'ДОХОД';
+  document.getElementById('incomeChart').innerHTML=`
+    <svg width="200" height="200" style="flex-shrink:0">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--border2)" stroke-width="${sw}"/>
+      ${circles}
+      <text x="${cx}" y="${cy-7}" text-anchor="middle" font-size="9" font-weight="700"
+        font-family="Segoe UI,Arial,sans-serif" fill="var(--muted)" letter-spacing="0.05em">${centerLbl}</text>
+      <text x="${cx}" y="${cy+10}" text-anchor="middle" font-size="13" font-weight="900"
+        font-family="Segoe UI,Arial,sans-serif" fill="#1C1C1C">${fmtM(total)}</text>
+    </svg>
+    <div style="min-width:140px">${legend}</div>`;
+}
+
+// ── MONTHLY REVENUE LINE CHART ────────────────────────────────
+// Fiscal year Jul 2025 – Jun 2026, all actual
+const MONTHS_SHORT=['Июл','Авг','Сен','Окт','Ноя','Дек','Янв','Фев','Мар','Апр','Май','Июн'];
+const YEAR_SPLIT=6; // after index 5 (Дек) the year changes to 2026
+// Revenue weights Jul 2025 – Jun 2026 (normalised internally by mSum)
+const BL_MULT_12={
+  'Фондовый рынок':[0.70,0.74,0.78,0.82,0.88,0.94,0.82,0.88,0.93,1.00,1.10,0.77],
+  'Срочный рынок': [0.70,0.75,0.80,0.86,0.92,0.97,1.00,1.05,1.10,1.16,1.22,0.77],
+  'Валютный рынок':[0.38,0.42,0.46,0.52,0.58,0.62,0.65,0.78,0.90,1.05,1.20,0.92],
+  'Денежный рынок':[0.84,0.86,0.87,0.88,0.90,0.92,0.90,0.94,0.97,1.00,1.03,0.66],
+};
+
+let _revChart=null;
+let _cltChart=null;
+let _adtvChart=null;
+let currentClientType='corp';
+
+function renderRevenueChart(){
+  const activeBLs=currentBL?BUSINESS_LINES.filter(b=>b.name===currentBL):BUSINESS_LINES;
+  const series=activeBLs.map(bl=>{
+    const blClients=clients.filter(c=>c.products.some(p=>bl.products.includes(p)));
+    const ytd=blClients.reduce((s,c)=>{
+      const k=c.products.filter(p=>bl.products.includes(p)).length;
+      return s+c.commMTD*YTD_MONTHS*(k/c.products.length);
+    },0);
+    const annual=ytd/YEAR_PCT;
+    const mult=BL_MULT_12[bl.name]||Array(12).fill(1);
+    const mSum=mult.reduce((s,m)=>s+m,0);
+    const values=mult.map(m=>annual*m/mSum/1e6);
+    return {bl,values};
+  });
+
+  const W=900,H=200,pL=55,pR=24,pT=14,pB=44;
+  const cW=W-pL-pR,cH=H-pT-pB;
+  const n=MONTHS_SHORT.length;
+  const rawMax=Math.max(...series.flatMap(s=>s.values));
+  const maxVal=Math.ceil(rawMax/10)*10||10;
+  const xOf=i=>pL+(i/(n-1))*cW;
+  const yOf=v=>pT+cH-(v/maxVal)*cH;
+
+  _revChart={series,W,H,pL,pR,pT,pB,cW,cH,n,maxVal,xOf,yOf};
+
+  // Year-change separator between Дек (idx 5) and Янв (idx 6)
+  const yrSepX=((xOf(YEAR_SPLIT-1)+xOf(YEAR_SPLIT))/2).toFixed(1);
+
+  // Grid + Y labels
+  const grid=Array.from({length:6},(_,i)=>{
+    const v=maxVal*i/5;
+    const y=yOf(v).toFixed(1);
+    return `<line x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" stroke="#EBEBEB" stroke-width="1"/>
+      <text x="${pL-6}" y="${(+y+3.5).toFixed(1)}" text-anchor="end" font-size="9" font-family="Segoe UI,Arial,sans-serif" fill="#ADADAD">${v.toFixed(0)}</text>`;
+  }).join('');
+
+  // Month labels + year labels
+  const xLabels=MONTHS_SHORT.map((m,i)=>
+    `<text x="${xOf(i).toFixed(1)}" y="${H-pB+16}" text-anchor="middle" font-size="10" font-family="Segoe UI,Arial,sans-serif" fill="#717171">${m}</text>`
+  ).join('');
+  const yr2025x=((xOf(0)+xOf(YEAR_SPLIT-1))/2).toFixed(1);
+  const yr2026x=((xOf(YEAR_SPLIT)+xOf(n-1))/2).toFixed(1);
+  const yrLabels=`
+    <text x="${yr2025x}" y="${H-pB+32}" text-anchor="middle" font-size="9" font-weight="700" font-family="Segoe UI,Arial,sans-serif" fill="#ADADAD" letter-spacing="0.06em">2025</text>
+    <line x1="${pL}" y1="${H-pB+23}" x2="${yrSepX}" y2="${H-pB+23}" stroke="#DADADA" stroke-width="1"/>
+    <line x1="${yrSepX}" y1="${H-pB+23}" x2="${W-pR}" y2="${H-pB+23}" stroke="#DADADA" stroke-width="1"/>
+    <text x="${yr2026x}" y="${H-pB+32}" text-anchor="middle" font-size="9" font-weight="700" font-family="Segoe UI,Arial,sans-serif" fill="#ADADAD" letter-spacing="0.06em">2026</text>`;
+
+  // Lines: 2025 dashed, 2026 solid; dots: hollow for 2025, filled for 2026
+  const lines=series.map(({bl,values})=>{
+    // 2025 segment (Jul–Dec, idx 0..YEAR_SPLIT) — dashed, connects to 2026 at Dec
+    const pts25=values.slice(0,YEAR_SPLIT+1).map((v,i)=>`${xOf(i).toFixed(1)},${yOf(v).toFixed(1)}`).join(' ');
+    // 2026 segment (Dec–Jun, idx YEAR_SPLIT..11) — solid
+    const pts26=values.slice(YEAR_SPLIT).map((v,i)=>`${xOf(YEAR_SPLIT+i).toFixed(1)},${yOf(v).toFixed(1)}`).join(' ');
+    return `<polyline points="${pts25}" fill="none" stroke="${bl.color}" stroke-width="1.5" stroke-dasharray="5,3" stroke-linejoin="round" stroke-linecap="round" opacity="0.8"/>
+      <polyline points="${pts26}" fill="none" stroke="${bl.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+  }).join('');
+
+  // Legend
+  const legend=series.map(({bl})=>
+    `<span style="display:inline-flex;align-items:center;gap:6px;margin-right:20px;font-size:11px;color:var(--muted)"><span style="display:inline-block;width:22px;height:3px;background:${bl.color};border-radius:2px"></span>${bl.name}</span>`
+  ).join('');
+
+  const container=document.getElementById('revenueLineChart');
+  container.style.position='relative';
+  container.innerHTML=`
+    <div style="margin-bottom:14px">${legend}</div>
+    <svg id="revSVG" width="100%" viewBox="0 0 ${W} ${H}" style="display:block;overflow:visible">
+      ${grid}
+      <line x1="${pL}" y1="${pT}" x2="${pL}" y2="${pT+cH}" stroke="#DADADA" stroke-width="1"/>
+      <line x1="${pL}" y1="${pT+cH}" x2="${W-pR}" y2="${pT+cH}" stroke="#DADADA" stroke-width="1"/>
+      <line x1="${yrSepX}" y1="${pT}" x2="${yrSepX}" y2="${pT+cH+8}" stroke="#C8C8C8" stroke-width="1" stroke-dasharray="3,3"/>
+      ${xLabels}${yrLabels}
+      <text x="14" y="${(pT+cH/2).toFixed(0)}" text-anchor="middle" transform="rotate(-90,14,${(pT+cH/2).toFixed(0)})" font-size="9" font-family="Segoe UI,Arial,sans-serif" fill="#ADADAD">млн ₽</text>
+      ${lines}
+      <line id="revVLine" x1="${pL}" y1="${pT}" x2="${pL}" y2="${pT+cH}" stroke="#ADADAD" stroke-width="1" stroke-dasharray="4,3" opacity="0" pointer-events="none"/>
+      <rect id="revOverlay" x="${pL}" y="${pT}" width="${cW}" height="${cH}" fill="transparent" style="cursor:crosshair"/>
+    </svg>
+    <div id="revTip" style="position:absolute;background:#fff;border:1px solid #DADADA;border-radius:7px;padding:10px 13px;font-size:11px;pointer-events:none;opacity:0;transition:opacity .1s;box-shadow:0 4px 16px rgba(0,0,0,.13);z-index:100;min-width:155px;top:30px;left:0"></div>`;
+
+  initChartHover();
+
+  // Linear regression slope + sparkline for trend column
+  function trendCell(values){
+    const nv=values.length;
+    const sumX=nv*(nv-1)/2;
+    const sumX2=nv*(nv-1)*(2*nv-1)/6;
+    const sumY=values.reduce((s,v)=>s+v,0);
+    const sumXY=values.reduce((s,v,i)=>s+i*v,0);
+    const slope=(nv*sumXY-sumX*sumY)/(nv*sumX2-sumX*sumX);
+    const tColor=slope>0.2?'#187A40':slope<-0.2?'#C43A3A':'#ADADAD';
+    const arrow=slope>0.2?'↑':slope<-0.2?'↓':'→';
+    const sw=54,sh=18,sp=2;
+    const mn=Math.min(...values),mx=Math.max(...values),rng=mx-mn||0.001;
+    const step=(sw-sp*2)/(nv-1);
+    const pts=values.map((v,i)=>`${(sp+i*step).toFixed(1)},${(sp+(1-(v-mn)/rng)*(sh-sp*2)).toFixed(1)}`).join(' ');
+    return `<td style="padding:0 8px"><div style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%">
+        <div style="flex:1;max-width:80%">
+          <svg width="100%" height="${sh}" viewBox="0 0 ${sw} ${sh}" preserveAspectRatio="none">
+            <polyline points="${pts}" fill="none" stroke="${tColor}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span style="font-size:13px;font-weight:900;color:${tColor};line-height:1;flex-shrink:0">${arrow}</span>
+      </div></td>`;
+  }
+
+  // Monthly table — two-row header: year groups + month names
+  const nMonths=MONTHS_SHORT.length;
+  const cols=`<colgroup>
+    <col style="width:145px">
+    ${Array(nMonths).fill('<col>').join('')}
+    <col style="width:195px">
+  </colgroup>`;
+  const yr2025hdr=`<th colspan="${YEAR_SPLIT}" style="text-align:center;font-size:9px;font-weight:900;letter-spacing:.08em;color:#ADADAD;border-bottom:2px solid #DADADA">2025</th>`;
+  const yr2026hdr=`<th colspan="${nMonths-YEAR_SPLIT}" style="text-align:center;font-size:9px;font-weight:900;letter-spacing:.08em;color:#ADADAD;border-bottom:2px solid #DADADA">2026</th>`;
+  const monthHdrs=MONTHS_SHORT.map(m=>`<th style="text-align:right;padding-right:12px">${m}</th>`).join('');
+  const bodyRows=series.map(({bl,values})=>{
+    const cells=values.map((v,i)=>{
+      let arrow='';
+      if(i>0){
+        if(v>values[i-1])arrow=`<span style="color:var(--green);font-size:10px;margin-left:2px">↑</span>`;
+        else if(v<values[i-1])arrow=`<span style="color:var(--red);font-size:10px;margin-left:2px">↓</span>`;
+      }
+      return `<td style="text-align:right;padding-right:12px">${v.toFixed(1)}${arrow}</td>`;
+    }).join('');
+    return `<tr>
+      <td style="font-weight:700;color:${bl.color};padding-left:20px">${bl.name}</td>
+      ${cells}${trendCell(values)}
+    </tr>`;
+  }).join('');
+  document.getElementById('revenueMonthlyTable').innerHTML=`
+    <table class="atbl" style="table-layout:fixed;width:100%">
+      ${cols}
+      <thead>
+        <tr>
+          <th rowspan="2" style="padding-left:20px;vertical-align:bottom">Рынок</th>
+          ${yr2025hdr}${yr2026hdr}
+          <th rowspan="2" style="vertical-align:bottom;text-align:center">Тренд</th>
+        </tr>
+        <tr>${monthHdrs}</tr>
+      </thead>
+      <tbody>${bodyRows}</tbody>
+    </table>`;
+}
+
+function initChartHover(){
+  const overlay=document.getElementById('revOverlay');
+  const vline=document.getElementById('revVLine');
+  const tip=document.getElementById('revTip');
+  const svg=document.getElementById('revSVG');
+  if(!overlay||!_revChart)return;
+  const {series,W,pL,pT,pB,cW,cH,n,xOf}=_revChart;
+
+  overlay.addEventListener('mousemove',e=>{
+    const rect=svg.getBoundingClientRect();
+    const svgX=(e.clientX-rect.left)/rect.width*W;
+    let idx=Math.round((svgX-pL)/(cW/(n-1)));
+    idx=Math.max(0,Math.min(n-1,idx));
+    const x=xOf(idx);
+
+    vline.setAttribute('x1',x.toFixed(1));
+    vline.setAttribute('x2',x.toFixed(1));
+    vline.setAttribute('opacity','1');
+
+
+    let total=0;
+    let rows='';
+    series.forEach(({bl,values})=>{
+      total+=values[idx];
+      rows+=`<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
+        <div style="width:8px;height:8px;border-radius:50%;background:${bl.color};flex-shrink:0"></div>
+        <span style="color:#717171;flex:1">${bl.short}</span>
+        <span style="font-weight:800;color:#1C1C1C">${values[idx].toFixed(1)}</span>
+      </div>`;
+    });
+    const tipYear=idx<YEAR_SPLIT?'2025':'2026';
+    tip.innerHTML=`<div style="font-weight:800;color:#1C1C1C;font-size:12px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #EBEBEB">${MONTHS_SHORT[idx]} ${tipYear}</div>
+      ${rows}
+      <div style="margin-top:6px;padding-top:6px;border-top:1px solid #EBEBEB;display:flex;justify-content:space-between;align-items:center">
+        <span style="color:#ADADAD;font-size:10px">Итого</span>
+        <span style="font-weight:900;color:#1C1C1C;font-size:12px">${total.toFixed(1)} млн ₽</span>
+      </div>`;
+    tip.style.opacity='1';
+
+    const cRect=document.getElementById('revenueLineChart').getBoundingClientRect();
+    const tipW=tip.offsetWidth||160;
+    let lx=(e.clientX-cRect.left)+16;
+    if(lx+tipW>cRect.width-4)lx=(e.clientX-cRect.left)-tipW-16;
+    tip.style.left=lx+'px';
+  });
+
+  overlay.addEventListener('mouseleave',()=>{
+    vline.setAttribute('opacity','0');
+    tip.style.opacity='0';
+  });
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+// ── ACTIVE CLIENTS ───────────────────────────────────────────
+const CORP_CLIENTS={
+  'Фондовый рынок':{start:287, ytd:312, forecast:335},
+  'Срочный рынок': {start:172, ytd:184, forecast:197},
+  'Валютный рынок':{start:86,  ytd:97,  forecast:104},
+  'Денежный рынок':{start:141, ytd:148, forecast:158},
+};
+const RETAIL_CLIENTS={
+  'Фондовый рынок':{start:183500, ytd:198400, forecast:212000},
+  'Срочный рынок': {start:46800,  ytd:51200,  forecast:55800},
+  'Валютный рынок':{start:30100,  ytd:34600,  forecast:38000},
+  'Денежный рынок':{start:103200, ytd:97400,  forecast:93000},
+};
+
+// Monthly active client counts Jul 2025 – Jun 2026 (12 months)
+const CORP_MONTHLY={
+  'Фондовый рынок':[287,291,295,299,303,306,307,309,310,311,312,311],
+  'Срочный рынок': [172,174,175,177,178,180,181,182,183,183,184,184],
+  'Валютный рынок':[86, 87, 89, 90, 92, 93, 94, 95, 96, 96, 97, 97],
+  'Денежный рынок':[141,142,143,144,145,146,147,147,148,148,148,148],
+};
+const RETAIL_MONTHLY={
+  'Фондовый рынок':[183500,185000,187200,189800,192300,194700,195800,196700,197400,197900,198400,198200],
+  'Срочный рынок': [46800,47200,47600,48100,48600,49100,49500,50000,50400,50800,51200,51100],
+  'Валютный рынок':[30100,30600,31100,31700,32300,32900,33300,33800,34100,34400,34600,34500],
+  'Денежный рынок':[103200,102800,102100,101500,100900,100200,99600,99000,98400,97900,97400,97200],
+};
+
+// Trading volumes YTD vs prior period (млрд ₽)
+const TRADING_VOL={
+  'Фондовый рынок':{total:{ytd:8420,prev:7650}, retail:{ytd:3890,prev:3420}, corp:{ytd:4530,prev:4230}},
+  'Срочный рынок': {total:{ytd:5180,prev:4720}, retail:{ytd:1840,prev:1620}, corp:{ytd:3340,prev:3100}},
+  'Валютный рынок':{total:{ytd:12600,prev:11800},retail:{ytd:2140,prev:1950}, corp:{ytd:10460,prev:9850}},
+  'Денежный рынок':{total:{ytd:18900,prev:17200},retail:{ytd:980, prev:1050}, corp:{ytd:17920,prev:16150}},
+};
+
+// Monthly trading volumes Jul 2025 – Jun 2026 (млрд ₽)
+const TRADING_VOL_MONTHLY={
+  'Фондовый рынок':{
+    total: [620,660,700,760,820,880,700,760,810,880,960,870],
+    corp:  [345,368,390,422,456,490,390,422,450,490,530,487],
+    retail:[275,292,310,338,364,390,310,338,360,390,430,383],
+  },
+  'Срочный рынок':{
+    total: [380,406,430,464,498,532,424,464,498,538,578,988],
+    corp:  [245,262,277,299,321,343,273,299,321,347,372,637],
+    retail:[135,144,153,165,177,189,151,165,177,191,206,351],
+  },
+  'Валютный рынок':{
+    total: [920,988,1060,1148,1240,1336,1060,1156,1248,1356,1468,1620],
+    corp:  [770,828,890,965,1044,1124,890,972,1050,1140,1234,1362],
+    retail:[150,160,170,183,196,212,170,184,198,216,234,258],
+  },
+  'Денежный рынок':{
+    total: [1460,1528,1588,1660,1740,1836,1660,1740,1820,1908,2000,1960],
+    corp:  [1386,1452,1510,1578,1654,1748,1578,1654,1732,1814,1900,1882],
+    retail:[74,76,78,82,86,88,82,86,88,94,100,78],
+  },
+};
+
+let tvFrom=0; let tvTo='ytd';
+let incFrom=0; let incTo='ytd';
+let arpcFrom=0; let arpcTo='ytd';
+
+// Average revenue per client YTD vs prior period (тыс. ₽)
+const AVG_REVENUE={
+  'Фондовый рынок':{total:{ytd:4.8,prev:4.3},  corp:{ytd:11240,prev:9860}, retail:{ytd:2.4,prev:2.1}},
+  'Срочный рынок': {total:{ytd:3.2,prev:2.9},  corp:{ytd:7480, prev:6620}, retail:{ytd:1.9,prev:1.7}},
+  'Валютный рынок':{total:{ytd:6.8,prev:6.1},  corp:{ytd:16900,prev:15200},retail:{ytd:3.1,prev:2.8}},
+  'Денежный рынок':{total:{ytd:4.5,prev:4.7},  corp:{ytd:13640,prev:12480},retail:{ytd:1.2,prev:1.3}},
+};
+
+// Monthly avg revenue per client Jul 2025 – Jun 2026 (тыс. ₽)
+const AVG_REVENUE_MONTHLY={
+  'Фондовый рынок':{
+    total:[4.0,4.2,4.5,4.7,5.0,5.3,4.4,4.7,5.0,5.4,5.8,5.2],
+    corp: [9400,9800,10200,10600,11000,11600,10000,10600,11000,11600,12200,11000],
+    retail:[1.9,2.0,2.1,2.2,2.4,2.6,2.1,2.3,2.4,2.6,2.8,2.5],
+  },
+  'Срочный рынок':{
+    total:[2.7,2.8,3.0,3.2,3.4,3.6,2.9,3.2,3.4,3.6,3.9,3.5],
+    corp: [7100,7300,7600,7900,8100,8400,7700,8000,8200,8500,8800,8200],
+    retail:[1.6,1.7,1.8,1.9,2.0,2.1,1.8,1.9,2.0,2.1,2.3,2.0],
+  },
+  'Валютный рынок':{
+    total:[5.8,6.1,6.4,6.7,7.1,7.5,6.3,6.8,7.2,7.7,8.2,7.4],
+    corp: [14800,15400,15900,16400,17000,17600,16200,16800,17300,17800,18400,17100],
+    retail:[2.6,2.7,2.8,3.0,3.2,3.4,2.9,3.1,3.2,3.4,3.6,3.2],
+  },
+  'Денежный рынок':{
+    total:[3.8,3.9,4.1,4.3,4.6,4.9,4.2,4.5,4.8,5.1,5.4,5.0],
+    corp: [12600,12900,13200,13600,14000,14500,13400,13900,14200,14700,15200,14300],
+    retail:[1.0,1.0,1.1,1.1,1.2,1.3,1.1,1.2,1.2,1.3,1.4,1.3],
+  },
+};
+
+function renderAvgRevenue(){
+  const activeBLs=currentBL?BUSINESS_LINES.filter(b=>b.name===currentBL):BUSINESS_LINES;
+  const isYTD=arpcTo==='ytd';
+  const toIdx=isYTD?11:arpcTo;
+  const len=toIdx-arpcFrom+1;
+  const prevTo=arpcFrom-1;
+  const prevFrom=arpcFrom-len;
+
+  const fmtV=(v,isCorp)=>isCorp
+    ?Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ')
+    :v.toFixed(1);
+  const fmtPct=(cur,prev)=>{
+    if(prev==null||prev===0)return '<span style="color:var(--muted)">—</span>';
+    const p=(cur-prev)/prev*100;
+    const sign=p>0?'+':'';
+    const color=p>0?'var(--green)':p<0?'var(--red)':'var(--muted)';
+    return `<span style="font-weight:800;color:${color}">${sign}${p.toFixed(1)}%</span>`;
+  };
+  const avg=(arr,f,t)=>{const sl=arr.slice(f,t+1);return sl.length?sl.reduce((s,v)=>s+v,0)/sl.length:0;};
+
+  const rows=activeBLs.map(bl=>{
+    let tCur,tPrev,cCur,cPrev,rCur,rPrev;
+    if(isYTD){
+      const d=AVG_REVENUE[bl.name];
+      if(!d)return '';
+      tCur=d.total.ytd; tPrev=d.total.prev;
+      cCur=d.corp.ytd;  cPrev=d.corp.prev;
+      rCur=d.retail.ytd;rPrev=d.retail.prev;
+    } else {
+      const m=AVG_REVENUE_MONTHLY[bl.name];
+      if(!m)return '';
+      tCur=avg(m.total,arpcFrom,toIdx); tPrev=prevFrom>=0?avg(m.total,prevFrom,prevTo):null;
+      cCur=avg(m.corp, arpcFrom,toIdx); cPrev=prevFrom>=0?avg(m.corp, prevFrom,prevTo):null;
+      rCur=avg(m.retail,arpcFrom,toIdx);rPrev=prevFrom>=0?avg(m.retail,prevFrom,prevTo):null;
+    }
+    return `<tr>
+      <td style="font-weight:700;color:${bl.color};padding-left:20px">${bl.name}</td>
+      <td style="text-align:center">${fmtV(tCur,false)}</td>
+      <td style="text-align:center">${fmtPct(tCur,tPrev)}</td>
+      <td style="text-align:center;font-weight:700">${fmtV(cCur,true)}</td>
+      <td style="text-align:center">${fmtPct(cCur,cPrev)}</td>
+      <td style="text-align:center">${fmtV(rCur,false)}</td>
+      <td style="text-align:center">${fmtPct(rCur,rPrev)}</td>
+    </tr>`;
+  }).join('');
+
+  const factHdr=isYTD?'Факт YTD':'Ср. за период';
+  document.getElementById('arpcTableWrap').innerHTML=`
+    <table class="atbl atbl-center" style="table-layout:fixed;width:100%">
+      <colgroup>
+        <col style="width:20%">
+        <col style="width:13.3%"><col style="width:13.3%">
+        <col style="width:13.3%"><col style="width:13.3%">
+        <col style="width:13.3%"><col style="width:13.4%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th rowspan="2" style="padding-left:20px;vertical-align:bottom;text-align:left">Рынок</th>
+          <th colspan="2" style="text-align:center;font-size:9px;font-weight:900;letter-spacing:.08em;color:#ADADAD;border-bottom:2px solid #DADADA">Всего</th>
+          <th colspan="2" style="text-align:center;font-size:9px;font-weight:900;letter-spacing:.08em;color:#ADADAD;border-bottom:2px solid #C85A08">Корп. клиенты</th>
+          <th colspan="2" style="text-align:center;font-size:9px;font-weight:900;letter-spacing:.08em;color:#ADADAD;border-bottom:2px solid #2B63B8">Физ. лица</th>
+        </tr>
+        <tr>
+          <th>${factHdr}</th><th>% — Прирост</th>
+          <th>${factHdr}</th><th>% — Прирост</th>
+          <th>${factHdr}</th><th>% — Прирост</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// Average Daily Trading Volume Jul 2025 – Jun 2026 (млрд ₽/день)
+const ADTV_MONTHLY={
+  'Фондовый рынок':[58,63,68,74,80,86,68,74,80,87,95,68],
+  'Срочный рынок': [35,38,41,45,49,53,43,47,51,56,60,40],
+  'Валютный рынок':[88,96,106,114,124,134,110,120,130,142,156,122],
+  'Денежный рынок':[130,135,139,144,150,157,143,149,155,162,168,110],
+};
+
+function renderAdtvTable(){
+  const activeBLs=currentBL?BUSINESS_LINES.filter(b=>b.name===currentBL):BUSINESS_LINES;
+  const nMonths=MONTHS_SHORT.length;
+  const cols=`<colgroup>
+    <col style="width:145px">
+    ${Array(nMonths).fill('<col>').join('')}
+    <col style="width:195px">
+  </colgroup>`;
+  const yr2025hdr=`<th colspan="${YEAR_SPLIT}" style="text-align:center;font-size:9px;font-weight:900;letter-spacing:.08em;color:#ADADAD;border-bottom:2px solid #DADADA">2025</th>`;
+  const yr2026hdr=`<th colspan="${nMonths-YEAR_SPLIT}" style="text-align:center;font-size:9px;font-weight:900;letter-spacing:.08em;color:#ADADAD;border-bottom:2px solid #DADADA">2026</th>`;
+  const monthHdrs=MONTHS_SHORT.map(m=>`<th style="text-align:right;padding-right:12px">${m}</th>`).join('');
+  const bodyRows=activeBLs.map(bl=>{
+    const values=ADTV_MONTHLY[bl.name]||Array(12).fill(0);
+    const cells=values.map((v,i)=>{
+      let arrow='';
+      if(i>0){
+        if(v>values[i-1])arrow=`<span style="color:var(--green);font-size:10px;margin-left:2px">↑</span>`;
+        else if(v<values[i-1])arrow=`<span style="color:var(--red);font-size:10px;margin-left:2px">↓</span>`;
+      }
+      return `<td style="text-align:right;padding-right:12px">${v.toFixed(0)}${arrow}</td>`;
+    }).join('');
+    return `<tr>
+      <td style="font-weight:700;color:${bl.color};padding-left:20px">${bl.name}</td>
+      ${cells}${_trendCell(values)}
+    </tr>`;
+  }).join('');
+  document.getElementById('adtvMonthlyTable').innerHTML=`
+    <table class="atbl" style="table-layout:fixed;width:100%">
+      ${cols}
+      <thead>
+        <tr>
+          <th rowspan="2" style="padding-left:20px;vertical-align:bottom">Рынок</th>
+          ${yr2025hdr}${yr2026hdr}
+          <th rowspan="2" style="vertical-align:bottom;text-align:center">Тренд</th>
+        </tr>
+        <tr>${monthHdrs}</tr>
+      </thead>
+      <tbody>${bodyRows}</tbody>
+    </table>`;
+}
+
+function renderAdtvChart(){
+  const activeBLs=currentBL?BUSINESS_LINES.filter(b=>b.name===currentBL):BUSINESS_LINES;
+  const series=activeBLs.map(bl=>({bl,values:ADTV_MONTHLY[bl.name]||Array(12).fill(0)}));
+
+  const W=900,H=200,pL=55,pR=24,pT=14,pB=44;
+  const cW=W-pL-pR,cH=H-pT-pB;
+  const n=MONTHS_SHORT.length;
+  const rawMax=Math.max(...series.flatMap(s=>s.values));
+  const maxVal=Math.ceil(rawMax/10)*10||10;
+  const xOf=i=>pL+(i/(n-1))*cW;
+  const yOf=v=>pT+cH-(v/maxVal)*cH;
+  _adtvChart={series,W,H,pL,pR,pT,pB,cW,cH,n,maxVal,xOf,yOf};
+
+  const yrSepX=((xOf(YEAR_SPLIT-1)+xOf(YEAR_SPLIT))/2).toFixed(1);
+  const grid=Array.from({length:6},(_,i)=>{
+    const v=maxVal*i/5;
+    const y=yOf(v).toFixed(1);
+    return `<line x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" stroke="#EBEBEB" stroke-width="1"/>
+      <text x="${pL-6}" y="${(+y+3.5).toFixed(1)}" text-anchor="end" font-size="9" font-family="Segoe UI,Arial,sans-serif" fill="#ADADAD">${v.toFixed(0)}</text>`;
+  }).join('');
+  const xLabels=MONTHS_SHORT.map((m,i)=>
+    `<text x="${xOf(i).toFixed(1)}" y="${H-pB+16}" text-anchor="middle" font-size="10" font-family="Segoe UI,Arial,sans-serif" fill="#717171">${m}</text>`
+  ).join('');
+  const yr2025x=((xOf(0)+xOf(YEAR_SPLIT-1))/2).toFixed(1);
+  const yr2026x=((xOf(YEAR_SPLIT)+xOf(n-1))/2).toFixed(1);
+  const yrLabels=`
+    <text x="${yr2025x}" y="${H-pB+32}" text-anchor="middle" font-size="9" font-weight="700" font-family="Segoe UI,Arial,sans-serif" fill="#ADADAD" letter-spacing="0.06em">2025</text>
+    <line x1="${pL}" y1="${H-pB+23}" x2="${yrSepX}" y2="${H-pB+23}" stroke="#DADADA" stroke-width="1"/>
+    <line x1="${yrSepX}" y1="${H-pB+23}" x2="${W-pR}" y2="${H-pB+23}" stroke="#DADADA" stroke-width="1"/>
+    <text x="${yr2026x}" y="${H-pB+32}" text-anchor="middle" font-size="9" font-weight="700" font-family="Segoe UI,Arial,sans-serif" fill="#ADADAD" letter-spacing="0.06em">2026</text>`;
+  const lines=series.map(({bl,values})=>{
+    const pts25=values.slice(0,YEAR_SPLIT+1).map((v,i)=>`${xOf(i).toFixed(1)},${yOf(v).toFixed(1)}`).join(' ');
+    const pts26=values.slice(YEAR_SPLIT).map((v,i)=>`${xOf(YEAR_SPLIT+i).toFixed(1)},${yOf(v).toFixed(1)}`).join(' ');
+    return `<polyline points="${pts25}" fill="none" stroke="${bl.color}" stroke-width="1.5" stroke-dasharray="5,3" stroke-linejoin="round" stroke-linecap="round" opacity="0.8"/>
+      <polyline points="${pts26}" fill="none" stroke="${bl.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+  }).join('');
+  const legend=series.map(({bl})=>
+    `<span style="display:inline-flex;align-items:center;gap:6px;margin-right:20px;font-size:11px;color:var(--muted)"><span style="display:inline-block;width:22px;height:3px;background:${bl.color};border-radius:2px"></span>${bl.name}</span>`
+  ).join('');
+  const container=document.getElementById('adtvLineChart');
+  container.style.position='relative';
+  container.innerHTML=`
+    <div style="margin-bottom:14px">${legend}</div>
+    <svg id="adtvSVG" width="100%" viewBox="0 0 ${W} ${H}" style="display:block;overflow:visible">
+      ${grid}
+      <line x1="${pL}" y1="${pT}" x2="${pL}" y2="${pT+cH}" stroke="#DADADA" stroke-width="1"/>
+      <line x1="${pL}" y1="${pT+cH}" x2="${W-pR}" y2="${pT+cH}" stroke="#DADADA" stroke-width="1"/>
+      <line x1="${yrSepX}" y1="${pT}" x2="${yrSepX}" y2="${pT+cH+8}" stroke="#C8C8C8" stroke-width="1" stroke-dasharray="3,3"/>
+      ${xLabels}${yrLabels}
+      <text x="14" y="${(pT+cH/2).toFixed(0)}" text-anchor="middle" transform="rotate(-90,14,${(pT+cH/2).toFixed(0)})" font-size="9" font-family="Segoe UI,Arial,sans-serif" fill="#ADADAD">млрд/д</text>
+      ${lines}
+      <line id="adtvVLine" x1="${pL}" y1="${pT}" x2="${pL}" y2="${pT+cH}" stroke="#ADADAD" stroke-width="1" stroke-dasharray="4,3" opacity="0" pointer-events="none"/>
+      <rect id="adtvOverlay" x="${pL}" y="${pT}" width="${cW}" height="${cH}" fill="transparent" style="cursor:crosshair"/>
+    </svg>
+    <div id="adtvTip" style="position:absolute;background:#fff;border:1px solid #DADADA;border-radius:7px;padding:10px 13px;font-size:11px;pointer-events:none;opacity:0;transition:opacity .1s;box-shadow:0 4px 16px rgba(0,0,0,.13);z-index:100;min-width:155px;top:30px;left:0"></div>`;
+  initAdtvChartHover();
+}
+
+function initAdtvChartHover(){
+  const overlay=document.getElementById('adtvOverlay');
+  const vline=document.getElementById('adtvVLine');
+  const tip=document.getElementById('adtvTip');
+  const svg=document.getElementById('adtvSVG');
+  if(!overlay||!_adtvChart)return;
+  const {series,W,pL,cW,cH,n,xOf}=_adtvChart;
+  overlay.addEventListener('mousemove',e=>{
+    const rect=svg.getBoundingClientRect();
+    const svgX=(e.clientX-rect.left)/rect.width*W;
+    let idx=Math.round((svgX-pL)/(cW/(n-1)));
+    idx=Math.max(0,Math.min(n-1,idx));
+    const x=xOf(idx);
+    vline.setAttribute('x1',x.toFixed(1));
+    vline.setAttribute('x2',x.toFixed(1));
+    vline.setAttribute('opacity','1');
+    let total=0;
+    let rows='';
+    series.forEach(({bl,values})=>{
+      total+=values[idx];
+      rows+=`<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
+        <div style="width:8px;height:8px;border-radius:50%;background:${bl.color};flex-shrink:0"></div>
+        <span style="color:#717171;flex:1">${bl.short}</span>
+        <span style="font-weight:800;color:#1C1C1C">${values[idx].toFixed(0)} млрд</span>
+      </div>`;
+    });
+    const tipYear=idx<YEAR_SPLIT?'2025':'2026';
+    tip.innerHTML=`<div style="font-weight:800;color:#1C1C1C;font-size:12px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #EBEBEB">${MONTHS_SHORT[idx]} ${tipYear}</div>
+      ${rows}
+      <div style="margin-top:6px;padding-top:6px;border-top:1px solid #EBEBEB;display:flex;justify-content:space-between;align-items:center">
+        <span style="color:#ADADAD;font-size:10px">Итого</span>
+        <span style="font-weight:900;color:#1C1C1C;font-size:12px">${total.toFixed(0)} млрд/д</span>
+      </div>`;
+    tip.style.opacity='1';
+    const cRect=document.getElementById('adtvLineChart').getBoundingClientRect();
+    const tipW=tip.offsetWidth||160;
+    let lx=(e.clientX-cRect.left)+16;
+    if(lx+tipW>cRect.width-4)lx=(e.clientX-cRect.left)-tipW-16;
+    tip.style.left=lx+'px';
+  });
+  overlay.addEventListener('mouseleave',()=>{
+    vline.setAttribute('opacity','0');
+    tip.style.opacity='0';
+  });
+}
+
+function toggleAdtvChart(){
+  const panel=document.getElementById('adtvChartPanel');
+  const btn=document.getElementById('toggleAdtvChartBtn');
+  const visible=panel.style.display!=='none';
+  panel.style.display=visible?'none':'block';
+  btn.textContent=visible?'Показать график':'Скрыть график';
+  btn.style.background=visible?'var(--s3)':'var(--s2)';
+  btn.style.borderColor=visible?'var(--border)':'var(--red)';
+  btn.style.color=visible?'var(--text)':'var(--red)';
+}
+
+function updateTradingPeriod(){
+  tvFrom=parseInt(document.getElementById('tvFrom').value);
+  const toVal=document.getElementById('tvTo').value;
+  tvTo=toVal==='ytd'?'ytd':parseInt(toVal);
+  // Validate: "по" must be >= "с"
+  if(tvTo!=='ytd'&&tvTo<tvFrom){
+    document.getElementById('tvTo').value=tvFrom;
+    tvTo=tvFrom;
+  }
+  const fromLbl=MONTHS_SHORT[tvFrom]+(tvFrom<YEAR_SPLIT?' 2025':' 2026');
+  const toLbl=tvTo==='ytd'?'YTD':MONTHS_SHORT[tvTo]+(tvTo<YEAR_SPLIT?' 2025':' 2026');
+  const sub=document.getElementById('tvSubtitle');
+  if(sub) sub.innerHTML=`${fromLbl} — ${toLbl} &nbsp;·&nbsp; млрд ₽ &nbsp;·&nbsp; % — к предыд. периоду`;
+  renderTradingVol();
+  renderTradingVolChart();
+}
+
+function updateIncomePeriod(){
+  incFrom=parseInt(document.getElementById('incFrom').value);
+  const toVal=document.getElementById('incTo').value;
+  incTo=toVal==='ytd'?'ytd':parseInt(toVal);
+  if(incTo!=='ytd'&&incTo<incFrom){
+    document.getElementById('incTo').value=incFrom;
+    incTo=incFrom;
+  }
+  const fromLbl=MONTHS_SHORT[incFrom]+(incFrom<YEAR_SPLIT?' 2025':' 2026');
+  const toLbl=incTo==='ytd'?'YTD':MONTHS_SHORT[incTo]+(incTo<YEAR_SPLIT?' 2025':' 2026');
+  const sub=document.getElementById('incSubtitle');
+  if(sub){
+    if(incTo==='ytd'){
+      sub.innerHTML=`Годовой план vs факт YTD &nbsp;·&nbsp; Данные на 15 июня 2026`;
+    } else {
+      sub.innerHTML=`${fromLbl} — ${toLbl} &nbsp;·&nbsp; % к пред. периоду`;
+    }
+  }
+  renderIncomeStructure();
+  renderIncomeChart();
+}
+
+function updateArpcPeriod(){
+  arpcFrom=parseInt(document.getElementById('arpcFrom').value);
+  const toVal=document.getElementById('arpcTo').value;
+  arpcTo=toVal==='ytd'?'ytd':parseInt(toVal);
+  if(arpcTo!=='ytd'&&arpcTo<arpcFrom){
+    document.getElementById('arpcTo').value=arpcFrom;
+    arpcTo=arpcFrom;
+  }
+  const fromLbl=MONTHS_SHORT[arpcFrom]+(arpcFrom<YEAR_SPLIT?' 2025':' 2026');
+  const toLbl=arpcTo==='ytd'?'YTD':MONTHS_SHORT[arpcTo]+(arpcTo<YEAR_SPLIT?' 2025':' 2026');
+  const sub=document.getElementById('arpcSubtitle');
+  if(sub){
+    if(arpcTo==='ytd'){
+      sub.innerHTML=`Факт YTD &nbsp;·&nbsp; тыс. ₽ &nbsp;·&nbsp; Данные на 15 июня 2026`;
+    } else {
+      sub.innerHTML=`${fromLbl} — ${toLbl} &nbsp;·&nbsp; тыс. ₽ &nbsp;·&nbsp; % к пред. периоду`;
+    }
+  }
+  renderAvgRevenue();
+}
+
+function _tvRangeSum(arr,from,to){
+  return arr.slice(from,to+1).reduce((s,v)=>s+v,0);
+}
+
+function _tvGetData(blName,segment){
+  const m=TRADING_VOL_MONTHLY[blName];
+  if(!m)return {cur:0,prev:null};
+  const arr=m[segment];
+  const toIdx=tvTo==='ytd'?arr.length-1:tvTo;
+  const len=toIdx-tvFrom+1;
+  const cur=_tvRangeSum(arr,tvFrom,toIdx);
+  const prevTo=tvFrom-1;
+  const prevFrom=tvFrom-len;
+  const prev=prevFrom>=0?_tvRangeSum(arr,prevFrom,prevTo):null;
+  return {cur,prev};
+}
+
+function renderTradingVol(){
+  const activeBLs=currentBL?BUSINESS_LINES.filter(b=>b.name===currentBL):BUSINESS_LINES;
+  const fmtV=v=>Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+  const fmtPct=(cur,prev)=>{
+    if(prev==null||prev===0)return '<span style="color:var(--muted)">—</span>';
+    const p=(cur-prev)/prev*100;
+    const sign=p>0?'+':'';
+    const color=p>0?'var(--green)':p<0?'var(--red)':'var(--muted)';
+    return `<span style="font-weight:800;color:${color}">${sign}${p.toFixed(1)}%</span>`;
+  };
+  const rows=activeBLs.map(bl=>{
+    const t=_tvGetData(bl.name,'total');
+    const c=_tvGetData(bl.name,'corp');
+    const r=_tvGetData(bl.name,'retail');
+    return `<tr>
+      <td style="font-weight:700;color:${bl.color};padding-left:20px">${bl.name}</td>
+      <td style="font-weight:700;text-align:center">${fmtV(t.cur)}</td>
+      <td style="text-align:center">${fmtPct(t.cur,t.prev)}</td>
+      <td style="text-align:center">${fmtV(c.cur)}</td>
+      <td style="text-align:center">${fmtPct(c.cur,c.prev)}</td>
+      <td style="text-align:center">${fmtV(r.cur)}</td>
+      <td style="text-align:center">${fmtPct(r.cur,r.prev)}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('tradingVolBody').innerHTML=rows;
+}
+
+function renderTradingVolChart(){
+  const activeBLs=currentBL?BUSINESS_LINES.filter(b=>b.name===currentBL):BUSINESS_LINES;
+  const data=activeBLs.map(bl=>({bl,val:_tvGetData(bl.name,'total').cur}));
+  const total=data.reduce((s,d)=>s+d.val,0);
+  const fmtV=v=>v>=1000?Math.round(v/100)/10+' трлн':Math.round(v)+' млрд';
+
+  const cx=100,cy=100,r=68,sw=28;
+  const C=2*Math.PI*r;
+  let cum=0;
+  const circles=data.map(d=>{
+    const pct=total>0?d.val/total:0;
+    const arc=pct*C;
+    const dashOffset=C*(0.25-cum);
+    cum+=pct;
+    return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none"
+      stroke="${d.bl.color}" stroke-width="${sw}"
+      stroke-dasharray="${arc.toFixed(2)} ${C.toFixed(2)}"
+      stroke-dashoffset="${dashOffset.toFixed(2)}"/>`;
+  }).join('');
+
+  const legend=data.map(d=>{
+    const pct=total>0?d.val/total*100:0;
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <div style="width:10px;height:10px;border-radius:50%;background:${d.bl.color};flex-shrink:0"></div>
+      <div style="font-size:11px;color:var(--muted);flex:1">${d.bl.short}</div>
+      <div style="font-size:12px;font-weight:800;color:var(--text)">${pct.toFixed(1)}%</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('tradingVolChart').innerHTML=`
+    <svg width="200" height="200" style="flex-shrink:0">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--border2)" stroke-width="${sw}"/>
+      ${circles}
+      <text x="${cx}" y="${cy-7}" text-anchor="middle" font-size="9" font-weight="700"
+        font-family="Segoe UI,Arial,sans-serif" fill="var(--muted)" letter-spacing="0.05em">ОБЪЕМ</text>
+      <text x="${cx}" y="${cy+10}" text-anchor="middle" font-size="13" font-weight="900"
+        font-family="Segoe UI,Arial,sans-serif" fill="#1C1C1C">${fmtV(total)}</text>
+    </svg>
+    <div style="min-width:140px">${legend}</div>`;
+}
+
+function renderActiveClients(){
+  const activeBLs=currentBL?BUSINESS_LINES.filter(b=>b.name===currentBL):BUSINESS_LINES;
+  const fmtN=n=>Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+
+  const makeRows=(data)=>activeBLs.map(bl=>{
+    const d=data[bl.name];
+    if(!d)return '';
+    const growth=d.start>0?(d.ytd-d.start)/d.start*100:0;
+    const gColor=growth>0?'var(--green)':growth<0?'var(--red)':'var(--muted)';
+    const gSign=growth>0?'+':'';
+    return `<tr>
+      <td style="font-weight:700;color:${bl.color};padding-left:20px">${bl.name}</td>
+      <td style="text-align:center">${fmtN(d.start)}</td>
+      <td style="font-weight:700;text-align:center">${fmtN(d.ytd)}</td>
+      <td style="text-align:center"><span style="font-weight:800;color:${gColor}">${gSign}${growth.toFixed(1)}%</span></td>
+      <td style="text-align:center;color:var(--muted)">${fmtN(d.forecast)}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('corpClientsBody').innerHTML=makeRows(CORP_CLIENTS);
+  document.getElementById('retailClientsBody').innerHTML=makeRows(RETAIL_CLIENTS);
+}
+
+function setClientType(type){
+  currentClientType=type;
+  document.querySelectorAll('.clt-btn').forEach(b=>b.classList.toggle('active',b.dataset.clt===type));
+  const sub=document.getElementById('clientsChartSubtitle');
+  if(sub)sub.textContent='Июл 2025 – Июн 2026  ·  '+(type==='retail'?'физ. лица':'корп. клиенты');
+  renderClientsMonthlyTable();
+  renderClientsLineChart();
+}
+
+function _trendCell(values){
+  const nv=values.length;
+  const sumX=nv*(nv-1)/2;
+  const sumX2=nv*(nv-1)*(2*nv-1)/6;
+  const sumY=values.reduce((s,v)=>s+v,0);
+  const sumXY=values.reduce((s,v,i)=>s+i*v,0);
+  const denom=nv*sumX2-sumX*sumX;
+  const slope=denom?((nv*sumXY-sumX*sumY)/denom):0;
+  const relSlope=sumY?slope/(sumY/nv)*100:0;
+  const tColor=relSlope>0.5?'#187A40':relSlope<-0.5?'#C43A3A':'#ADADAD';
+  const arrow=relSlope>0.5?'↑':relSlope<-0.5?'↓':'→';
+  const sw=54,sh=18,sp=2;
+  const mn=Math.min(...values),mx=Math.max(...values),rng=mx-mn||0.001;
+  const step=(sw-sp*2)/(nv-1);
+  const pts=values.map((v,i)=>`${(sp+i*step).toFixed(1)},${(sp+(1-(v-mn)/rng)*(sh-sp*2)).toFixed(1)}`).join(' ');
+  return `<td style="padding:0 8px"><div style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%">
+      <div style="flex:1;max-width:80%">
+        <svg width="100%" height="${sh}" viewBox="0 0 ${sw} ${sh}" preserveAspectRatio="none">
+          <polyline points="${pts}" fill="none" stroke="${tColor}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span style="font-size:13px;font-weight:900;color:${tColor};line-height:1;flex-shrink:0">${arrow}</span>
+    </div></td>`;
+}
+
+function renderClientsMonthlyTable(){
+  const activeBLs=currentBL?BUSINESS_LINES.filter(b=>b.name===currentBL):BUSINESS_LINES;
+  const data=currentClientType==='retail'?RETAIL_MONTHLY:CORP_MONTHLY;
+  const isRetail=currentClientType==='retail';
+  const fmtV=v=>Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+
+  const nMonths=MONTHS_SHORT.length;
+  const cols=`<colgroup>
+    <col style="width:145px">
+    ${Array(nMonths).fill('<col>').join('')}
+    <col style="width:195px">
+  </colgroup>`;
+  const yr2025hdr=`<th colspan="${YEAR_SPLIT}" style="text-align:center;font-size:9px;font-weight:900;letter-spacing:.08em;color:#ADADAD;border-bottom:2px solid #DADADA">2025</th>`;
+  const yr2026hdr=`<th colspan="${nMonths-YEAR_SPLIT}" style="text-align:center;font-size:9px;font-weight:900;letter-spacing:.08em;color:#ADADAD;border-bottom:2px solid #DADADA">2026</th>`;
+  const monthHdrs=MONTHS_SHORT.map(m=>`<th style="text-align:right;padding-right:12px">${m}</th>`).join('');
+
+  const bodyRows=activeBLs.map(bl=>{
+    const values=data[bl.name]||Array(12).fill(0);
+    const cells=values.map((v,i)=>{
+      let arrow='';
+      if(i>0){
+        if(v>values[i-1])arrow=`<span style="color:var(--green);font-size:10px;margin-left:2px">↑</span>`;
+        else if(v<values[i-1])arrow=`<span style="color:var(--red);font-size:10px;margin-left:2px">↓</span>`;
+      }
+      return `<td style="text-align:right;padding-right:12px">${fmtV(v)}${arrow}</td>`;
+    }).join('');
+    return `<tr>
+      <td style="font-weight:700;color:${bl.color};padding-left:20px">${bl.name}</td>
+      ${cells}${_trendCell(values)}
+    </tr>`;
+  }).join('');
+
+  document.getElementById('clientsMonthlyTable').innerHTML=`
+    <table class="atbl" style="table-layout:fixed;width:100%">
+      ${cols}
+      <thead>
+        <tr>
+          <th rowspan="2" style="padding-left:20px;vertical-align:bottom">Рынок</th>
+          ${yr2025hdr}${yr2026hdr}
+          <th rowspan="2" style="vertical-align:bottom;text-align:center">Тренд</th>
+        </tr>
+        <tr>${monthHdrs}</tr>
+      </thead>
+      <tbody>${bodyRows}</tbody>
+    </table>`;
+}
+
+function renderClientsLineChart(){
+  const activeBLs=currentBL?BUSINESS_LINES.filter(b=>b.name===currentBL):BUSINESS_LINES;
+  const data=currentClientType==='retail'?RETAIL_MONTHLY:CORP_MONTHLY;
+  const isRetail=currentClientType==='retail';
+  const scale=isRetail?1000:1;
+
+  const series=activeBLs.map(bl=>({
+    bl,
+    values:(data[bl.name]||Array(12).fill(0)).map(v=>v/scale)
+  }));
+
+  const W=900,H=200,pL=55,pR=24,pT=14,pB=44;
+  const cW=W-pL-pR,cH=H-pT-pB;
+  const n=MONTHS_SHORT.length;
+  const rawMax=Math.max(...series.flatMap(s=>s.values));
+  const rawMin=Math.min(...series.flatMap(s=>s.values));
+  const padding=(rawMax-rawMin)*0.1||rawMax*0.1||1;
+  const maxVal=rawMax+padding;
+  const minVal=Math.max(0,rawMin-padding);
+  const rangeVal=maxVal-minVal||1;
+  const xOf=i=>pL+(i/(n-1))*cW;
+  const yOf=v=>pT+cH-((v-minVal)/rangeVal)*cH;
+
+  _cltChart={series,W,H,pL,pR,pT,pB,cW,cH,n,maxVal,minVal,rangeVal,xOf,yOf,isRetail,scale};
+
+  const yrSepX=((xOf(YEAR_SPLIT-1)+xOf(YEAR_SPLIT))/2).toFixed(1);
+
+  const grid=Array.from({length:5},(_,i)=>{
+    const v=minVal+(rangeVal*i/4);
+    const y=yOf(v).toFixed(1);
+    const lbl=isRetail?(v/1).toFixed(0):(v).toFixed(0);
+    return `<line x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" stroke="#EBEBEB" stroke-width="1"/>
+      <text x="${pL-6}" y="${(+y+3.5).toFixed(1)}" text-anchor="end" font-size="9" font-family="Segoe UI,Arial,sans-serif" fill="#ADADAD">${lbl}</text>`;
+  }).join('');
+
+  const xLabels=MONTHS_SHORT.map((m,i)=>
+    `<text x="${xOf(i).toFixed(1)}" y="${H-pB+16}" text-anchor="middle" font-size="10" font-family="Segoe UI,Arial,sans-serif" fill="#717171">${m}</text>`
+  ).join('');
+  const yr2025x=((xOf(0)+xOf(YEAR_SPLIT-1))/2).toFixed(1);
+  const yr2026x=((xOf(YEAR_SPLIT)+xOf(n-1))/2).toFixed(1);
+  const yrLabels=`
+    <text x="${yr2025x}" y="${H-pB+32}" text-anchor="middle" font-size="9" font-weight="700" font-family="Segoe UI,Arial,sans-serif" fill="#ADADAD" letter-spacing="0.06em">2025</text>
+    <line x1="${pL}" y1="${H-pB+23}" x2="${yrSepX}" y2="${H-pB+23}" stroke="#DADADA" stroke-width="1"/>
+    <line x1="${yrSepX}" y1="${H-pB+23}" x2="${W-pR}" y2="${H-pB+23}" stroke="#DADADA" stroke-width="1"/>
+    <text x="${yr2026x}" y="${H-pB+32}" text-anchor="middle" font-size="9" font-weight="700" font-family="Segoe UI,Arial,sans-serif" fill="#ADADAD" letter-spacing="0.06em">2026</text>`;
+
+  const lines=series.map(({bl,values})=>{
+    const pts25=values.slice(0,YEAR_SPLIT+1).map((v,i)=>`${xOf(i).toFixed(1)},${yOf(v).toFixed(1)}`).join(' ');
+    const pts26=values.slice(YEAR_SPLIT).map((v,i)=>`${xOf(YEAR_SPLIT+i).toFixed(1)},${yOf(v).toFixed(1)}`).join(' ');
+    return `<polyline points="${pts25}" fill="none" stroke="${bl.color}" stroke-width="1.5" stroke-dasharray="5,3" stroke-linejoin="round" stroke-linecap="round" opacity="0.8"/>
+      <polyline points="${pts26}" fill="none" stroke="${bl.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+  }).join('');
+
+  const legend=series.map(({bl})=>
+    `<span style="display:inline-flex;align-items:center;gap:6px;margin-right:20px;font-size:11px;color:var(--muted)"><span style="display:inline-block;width:22px;height:3px;background:${bl.color};border-radius:2px"></span>${bl.name}</span>`
+  ).join('');
+
+  const yAxisLabel=isRetail?'тыс.':'клиентов';
+  const container=document.getElementById('clientsLineChart');
+  container.style.position='relative';
+  container.innerHTML=`
+    <div style="margin-bottom:14px">${legend}</div>
+    <svg id="cltSVG" width="100%" viewBox="0 0 ${W} ${H}" style="display:block;overflow:visible">
+      ${grid}
+      <line x1="${pL}" y1="${pT}" x2="${pL}" y2="${pT+cH}" stroke="#DADADA" stroke-width="1"/>
+      <line x1="${pL}" y1="${pT+cH}" x2="${W-pR}" y2="${pT+cH}" stroke="#DADADA" stroke-width="1"/>
+      <line x1="${yrSepX}" y1="${pT}" x2="${yrSepX}" y2="${pT+cH+8}" stroke="#C8C8C8" stroke-width="1" stroke-dasharray="3,3"/>
+      ${xLabels}${yrLabels}
+      <text x="14" y="${(pT+cH/2).toFixed(0)}" text-anchor="middle" transform="rotate(-90,14,${(pT+cH/2).toFixed(0)})" font-size="9" font-family="Segoe UI,Arial,sans-serif" fill="#ADADAD">${yAxisLabel}</text>
+      ${lines}
+      <line id="cltVLine" x1="${pL}" y1="${pT}" x2="${pL}" y2="${pT+cH}" stroke="#ADADAD" stroke-width="1" stroke-dasharray="4,3" opacity="0" pointer-events="none"/>
+      <rect id="cltOverlay" x="${pL}" y="${pT}" width="${cW}" height="${cH}" fill="transparent" style="cursor:crosshair"/>
+    </svg>
+    <div id="cltTip" style="position:absolute;background:#fff;border:1px solid #DADADA;border-radius:7px;padding:10px 13px;font-size:11px;pointer-events:none;opacity:0;transition:opacity .1s;box-shadow:0 4px 16px rgba(0,0,0,.13);z-index:100;min-width:155px;top:30px;left:0"></div>`;
+
+  initClientsChartHover();
+}
+
+function initClientsChartHover(){
+  const overlay=document.getElementById('cltOverlay');
+  const vline=document.getElementById('cltVLine');
+  const tip=document.getElementById('cltTip');
+  const svg=document.getElementById('cltSVG');
+  if(!overlay||!_cltChart)return;
+  const {series,W,pL,pT,cW,cH,n,xOf,isRetail,scale}=_cltChart;
+
+  overlay.addEventListener('mousemove',e=>{
+    const rect=svg.getBoundingClientRect();
+    const svgX=(e.clientX-rect.left)/rect.width*W;
+    let idx=Math.round((svgX-pL)/(cW/(n-1)));
+    idx=Math.max(0,Math.min(n-1,idx));
+    const x=xOf(idx);
+    vline.setAttribute('x1',x.toFixed(1));
+    vline.setAttribute('x2',x.toFixed(1));
+    vline.setAttribute('opacity','1');
+
+
+
+
+
+    const fmtK=raw=>Math.round(raw).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ')+" кл.";
+    let total=0;
+    let rows='';
+    series.forEach(({bl,values})=>{
+      const raw=values[idx]*scale;
+      total+=raw;
+      rows+=`<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
+        <div style="width:8px;height:8px;border-radius:50%;background:${bl.color};flex-shrink:0"></div>
+        <span style="color:#717171;flex:1">${bl.short}</span>
+        <span style="font-weight:800;color:#1C1C1C">${fmtK(values[idx]*scale)}</span>
+      </div>`;
+    });
+    const tipYear=idx<YEAR_SPLIT?'2025':'2026';
+    const totalFmt=fmtK(total);
+    tip.innerHTML=`<div style="font-weight:800;color:#1C1C1C;font-size:12px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #EBEBEB">${MONTHS_SHORT[idx]} ${tipYear}</div>
+      ${rows}
+      <div style="margin-top:6px;padding-top:6px;border-top:1px solid #EBEBEB;display:flex;justify-content:space-between;align-items:center">
+        <span style="color:#ADADAD;font-size:10px">Итого</span>
+        <span style="font-weight:900;color:#1C1C1C;font-size:12px">${totalFmt}</span>
+      </div>`;
+    tip.style.opacity='1';
+    const cRect=document.getElementById('clientsLineChart').getBoundingClientRect();
+    const tipW=tip.offsetWidth||160;
+    let lx=(e.clientX-cRect.left)+16;
+    if(lx+tipW>cRect.width-4)lx=(e.clientX-cRect.left)-tipW-16;
+    tip.style.left=lx+'px';
+  });
+
+  overlay.addEventListener('mouseleave',()=>{
+    vline.setAttribute('opacity','0');
+    tip.style.opacity='0';
+  });
+}
+
+function toggleClientsChart(){
+  const panel=document.getElementById('clientsChartPanel');
+  const btn=document.getElementById('toggleClientsChartBtn');
+  const visible=panel.style.display!=='none';
+  panel.style.display=visible?'none':'block';
+  btn.textContent=visible?'Показать график':'Скрыть график';
+  btn.style.background=visible?'var(--s3)':'var(--s2)';
+  btn.style.borderColor=visible?'var(--border)':'var(--red)';
+  btn.style.color=visible?'var(--text)':'var(--red)';
+}
+
+function renderAll(){
+  renderIncomeStructure();
+  renderIncomeChart();
+  renderRevenueChart();
+  renderAdtvTable();
+  renderAdtvChart();
+  renderTradingVol();
+  renderTradingVolChart();
+  renderAvgRevenue();
+  renderActiveClients();
+  renderClientsMonthlyTable();
+  renderClientsLineChart();
+  renderCurrentView();
+  renderAtbl();
+  renderSegPen();
+}
+const MONTHS=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const DAYS=['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
+const t=new Date();
+document.getElementById('hdrDate').textContent=DAYS[t.getDay()]+', '+t.getDate()+' '+MONTHS[t.getMonth()]+' '+t.getFullYear()+' г.';
+document.getElementById('updTime').textContent=new Date().toLocaleTimeString('ru-RU');
+
+renderAll();
+
+function toggleRevenueChart(){
+  const panel=document.getElementById('revenueChartPanel');
+  const btn=document.getElementById('toggleChartBtn');
+  const visible=panel.style.display!=='none';
+  panel.style.display=visible?'none':'block';
+  btn.textContent=visible?'Показать график':'Скрыть график';
+  btn.style.background=visible?'var(--s3)':'var(--s2)';
+  btn.style.borderColor=visible?'var(--border)':'var(--red)';
+  btn.style.color=visible?'var(--text)':'var(--red)';
+}
+</script>
+</body>
+</html>
+
