@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Bell, LogOut, ChevronDown, Settings } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { MoexLogo } from '../MoexLogo';
-import { SearchBox } from './SearchBox';
 
 const roleLabels: Record<string, string> = {
   ceo: 'CEO / Правление',
@@ -57,11 +56,6 @@ export const Header = () => {
       >
         <MoexLogo height={26} />
       </div>
-
-      {/* In left-menu mode the search lives at the top, aligned with the work area */}
-      {role && menuPosition === 'left' && (
-        <SearchBox variant="bar" width={320} />
-      )}
 
       {/* Floating action pill */}
       <div className="float-pill" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4, padding: 8 }}>
