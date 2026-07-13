@@ -22,13 +22,13 @@ export const ClientsPage = () => {
   const [segment, setSegment] = useState<string>('all');
 
   return (
-    <Layout breadcrumbs={[{ label: 'Клиенты' }]}>
+    <Layout breadcrumbs={[{ label: 'Портфель' }]}>
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
           <Users size={20} className="text-blue-700" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Клиенты</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Портфель</h1>
           <p className="text-sm text-slate-500">Холдинги в портфеле и рэнкинг по рынкам</p>
         </div>
       </div>

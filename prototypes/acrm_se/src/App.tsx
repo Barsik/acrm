@@ -24,6 +24,7 @@ import { EventsPage } from './pages/EventsPage';
 import { NewsPage } from './pages/NewsPage';
 import { AgreementsPage } from './pages/AgreementsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { LoginPage } from './pages/LoginPage';
 
 const roleHomePath: Record<string, string> = {
   ceo: '/ceo',
@@ -36,12 +37,13 @@ const roleHomePath: Record<string, string> = {
 const RootRedirect = () => {
   const { role } = useApp();
   if (role) return <Navigate to={roleHomePath[role] || '/role-select'} replace />;
-  return <Navigate to="/role-select" replace />;
+  return <Navigate to="/login" replace />;
 };
 
 const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<RootRedirect />} />
+    <Route path="/login" element={<LoginPage />} />
     <Route path="/role-select" element={<RoleSelect />} />
     <Route path="/ceo" element={<CEOPage />} />
     <Route path="/block-head" element={<BlockHeadPage />} />
