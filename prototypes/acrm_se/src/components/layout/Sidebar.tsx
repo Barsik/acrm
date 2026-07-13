@@ -22,7 +22,7 @@ const navItems: NavItem[] = [
   { label: 'Главная', icon: <LayoutDashboard size={ICON} strokeWidth={1.8} />, path: '__role__' },
   { label: 'Задачи', icon: <CheckSquare size={ICON} strokeWidth={1.8} />, path: '/tasks', badge: 8 },
   { label: 'Алерты', icon: <AlertTriangle size={ICON} strokeWidth={1.8} />, path: '/alerts', badge: 5 },
-  { label: 'Портфель', icon: <Building2 size={ICON} strokeWidth={1.8} />, path: '/clients' },
+  { label: 'Клиенты', icon: <Users size={ICON} strokeWidth={1.8} />, path: '/clients' },
   { label: 'Монитор активности', icon: <Activity size={ICON} strokeWidth={1.8} />, path: '/activity' },
   { label: 'Продукты', icon: <Package size={ICON} strokeWidth={1.8} />, path: '/products' },
   { label: 'Воронка продаж', icon: <Filter size={ICON} strokeWidth={1.8} />, path: '/funnel' },

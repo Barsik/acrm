@@ -8,6 +8,7 @@ import { ManagerPage } from './pages/Manager';
 import { OperationsPage } from './pages/Operations';
 import { HoldingsListPage } from './pages/HoldingsListPage';
 import { ClientsPage } from './pages/ClientsPage';
+import { ClientDetailPage } from './pages/ClientDetailPage';
 import { HoldingPage } from './pages/HoldingPage';
 import { CompanyPage } from './pages/CompanyPage';
 import { PersonPage } from './pages/PersonPage';
@@ -51,7 +52,9 @@ const AppRoutes = () => (
     <Route path="/manager" element={<ManagerPage />} />
     <Route path="/operations" element={<OperationsPage />} />
     <Route path="/holdings" element={<HoldingsListPage />} />
+    <Route path="/portfolio" element={<ClientsPage />} />
     <Route path="/clients" element={<ClientsPage />} />
+    <Route path="/clients/:id" element={<ClientDetailPage />} />
     <Route path="/holdings/:id" element={<HoldingPage />} />
     <Route path="/companies/:id" element={<CompanyPage />} />
     <Route path="/persons" element={<PersonsListPage />} />

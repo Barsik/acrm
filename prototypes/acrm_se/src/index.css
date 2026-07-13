@@ -222,6 +222,22 @@ body {
   color: #5A6478;
 }
 
+.detail-pill {
+  @apply inline-flex items-center justify-center rounded-full border px-3 py-2 text-sm font-semibold transition-all cursor-pointer;
+  color: #3A4255;
+  background: #ffffff;
+  border-color: #E8EBF0;
+}
+.detail-pill:hover {
+  background: #F8F9FB;
+  border-color: #CED6E3;
+}
+.detail-pill.active {
+  color: #ffffff;
+  background: #E8001C;
+  border-color: #E8001C;
+}
+
 /* ---- Data table ---- */
 /* Matches the client-portal-front "Задачи команды" table: transparent uppercase
    header (no fill bar), comfortable rows split by light dividers, no last-row border. */

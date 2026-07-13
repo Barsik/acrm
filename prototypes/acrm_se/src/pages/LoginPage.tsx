@@ -44,7 +44,6 @@ export const LoginPage = () => {
           <MoexLogo height={34} />
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: 20, fontWeight: 700, color: '#1E2535' }}>Вход в aCRM</div>
-            <div style={{ fontSize: 13, color: '#5A6478', marginTop: 6 }}>Введите данные сотрудника для доступа к рабочему пространству</div>
           </div>
         </div>
 
