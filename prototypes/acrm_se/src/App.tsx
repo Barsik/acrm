@@ -25,6 +25,7 @@ import { EventsPage } from './pages/EventsPage';
 import { NewsPage } from './pages/NewsPage';
 import { AgreementsPage } from './pages/AgreementsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { ProfilePage } from './pages/ProfilePage';
 import { LoginPage } from './pages/LoginPage';
 
 const roleHomePath: Record<string, string> = {
@@ -71,6 +72,7 @@ const AppRoutes = () => (
     <Route path="/news" element={<NewsPage />} />
     <Route path="/agreements" element={<AgreementsPage />} />
     <Route path="/settings" element={<SettingsPage />} />
+    <Route path="/profile" element={<ProfilePage />} />
     <Route path="*" element={<Navigate to="/role-select" replace />} />
   </Routes>
 );

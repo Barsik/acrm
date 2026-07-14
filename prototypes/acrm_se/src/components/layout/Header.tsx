@@ -81,11 +81,12 @@ export const Header = () => {
         </button>
 
         {role && (
-          <div ref={menuRef} style={{ position: 'relative' }}>
+          <div ref={menuRef} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
             <button
-              onClick={() => setMenuOpen(o => !o)}
+              title="Профиль"
+              onClick={() => navigate('/profile')}
               style={{
-                display: 'flex', alignItems: 'center', gap: 8, height: 36, paddingLeft: 6, paddingRight: 10,
+                display: 'flex', alignItems: 'center', gap: 8, height: 36, paddingLeft: 6, paddingRight: 6,
                 borderRadius: 12, border: 'none', background: 'transparent', cursor: 'pointer',
               }}
             >
@@ -95,6 +96,15 @@ export const Header = () => {
                 background: '#E8EBF0', color: '#3A4255', fontSize: 11, fontWeight: 700,
               }}>{roleInitials[role]}</span>
               <span style={{ fontSize: 12, fontWeight: 700, color: '#5A6478' }} className="hidden sm:inline">{roleLabels[role]}</span>
+            </button>
+            <button
+              title="Меню"
+              onClick={() => setMenuOpen(o => !o)}
+              style={{
+                display: 'flex', alignItems: 'center', height: 36, padding: '0 8px',
+                borderRadius: 12, border: 'none', background: 'transparent', cursor: 'pointer',
+              }}
+            >
               <ChevronDown size={14} style={{ color: '#A0AABB' }} />
             </button>
             {menuOpen && (

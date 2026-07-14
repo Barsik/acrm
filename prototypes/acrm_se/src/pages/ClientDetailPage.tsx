@@ -8,6 +8,7 @@ import {
 } from '../services';
 import { clients as clientRecords } from '../data/mockDatabase';
 import { CompanyRankingTab } from '../features/ranking/CompanyRankingTab';
+import { PortfolioAnalyticsTab } from '../features/portfolioAnalytics/PortfolioAnalyticsTab';
 import { formatRevenue, formatVolume } from '../data/mockData';
 import { Building, ChevronRight, Brain, Target, Calendar, FileText, AlertTriangle, BarChart3 } from 'lucide-react';
 
@@ -16,25 +17,13 @@ type TabId = typeof TABS[number];
 const TAB_LABELS: Record<TabId, string> = {
   overview: 'Обзор', products: 'Продукты и сервисы', operations: 'Операции',
   revenue: 'Доходы', end_clients: 'Конечные клиенты', contacts: 'Контакты',
-  alerts: 'Алерты', tasks: 'Задачи', ratings: 'Рейтинги', market_comparison: 'Сравнение с рынком', documents: 'Документы',
+  alerts: 'Алерты', tasks: 'Задачи', ratings: 'Рейтинги', market_comparison: 'Аналитика портфеля', documents: 'Документы',
 };
-
-const BENCHMARK_METRICS = [
-  { value: 'turnover', label: 'Обороты' },
-  { value: 'auc', label: 'AuC' },
-  { value: 'clients', label: 'Клиенты' },
-];
-const BENCHMARK_ROWS = [
-  { name: 'Акции', own: '84,2', market: '113,4', rank: 4 },
-  { name: 'Облигации', own: '112,6', market: '98,7', rank: 7 },
-  { name: 'AuC', own: '5,8', market: '4,2', rank: 5 },
-];
 
 export const ClientDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [tab, setTab] = useState<TabId>('overview');
-  const [benchmarkMetric, setBenchmarkMetric] = useState(BENCHMARK_METRICS[0].value);
 
   const client = clientRecords.find((item) => item.id === Number(id));
   const persons = personService.getByCompany(String(client?.id ?? ''));
@@ -320,79 +309,7 @@ export const ClientDetailPage = () => {
 
       {tab === 'ratings' && <CompanyRankingTab companyName={client.name} />}
 
-      {tab === 'market_comparison' && (
-        <div className="space-y-4">
-          <div className="card p-5">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-slate-900">Сравнение с рынком и группой</h2>
-                <p className="text-sm text-slate-500 max-w-2xl">Основные показатели по рынкам: значение клиента, рынок и место. Переключите метрику, чтобы сразу увидеть, где клиент опережает рынок, а где отстает.</p>
-              </div>
-              <div className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">Метрика: {BENCHMARK_METRICS.find((item) => item.value === benchmarkMetric)?.label}</div>
-            </div>
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              {BENCHMARK_METRICS.map((item) => (
-                <button
-                  key={item.value}
-                  type="button"
-                  onClick={() => setBenchmarkMetric(item.value)}
-                  className={`metric-control ${benchmarkMetric === item.value ? 'active' : ''} rounded-full border px-3 py-2 text-sm ${benchmarkMetric === item.value ? 'bg-slate-900 text-white' : 'bg-white text-slate-700 border-slate-200'}`}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-5 overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="text-xs text-slate-500 uppercase tracking-[0.18em] border-b border-slate-200">
-                    <th className="py-3">Класс актива</th>
-                    <th className="py-3">Мы</th>
-                    <th className="py-3">Рынок</th>
-                    <th className="py-3">Место</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {BENCHMARK_ROWS.map((row) => (
-                    <tr key={row.name} className="hover:bg-slate-50">
-                      <td className="py-3 font-semibold text-slate-900">{row.name}</td>
-                      <td className="py-3 text-slate-700">{row.own}</td>
-                      <td className="py-3 text-slate-700">{row.market}</td>
-                      <td className="py-3 text-slate-700">{row.rank}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="card p-5">
-            <div className="grid gap-3 sm:grid-cols-3">
-              {[{
-                label: 'Клиент',
-                title: client.name,
-                detail: `${client.segment ?? 'Корпоративный'} · ${client.status}`,
-              }, {
-                label: 'Пир',
-                title: 'Peer группа',
-                detail: 'Сравнение ближайших конкурентов по тем же рынкам',
-              }, {
-                label: 'Рынок',
-                title: 'Рынок выбранных клиентов',
-                detail: 'Все брокеры, тот же период и продуктовый контур',
-              }].map((item) => (
-                <div key={item.label} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <div className="text-xs uppercase tracking-[0.18em] text-slate-500 mb-3">{item.label}</div>
-                  <div className="font-semibold text-slate-900">{item.title}</div>
-                  <div className="text-sm text-slate-500 mt-2">{item.detail}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      {tab === 'market_comparison' && <PortfolioAnalyticsTab companyName={client.name} />}
 
       {(tab === 'products' || tab === 'operations' || tab === 'revenue' || tab === 'documents') && (
         <div className="bg-white rounded-xl border border-slate-200 p-8 text-center shadow-sm">
