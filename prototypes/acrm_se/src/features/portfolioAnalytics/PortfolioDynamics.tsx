@@ -208,7 +208,7 @@ export const PortfolioDynamics = ({ ownName, filters, setFilters, openSegment }:
                 <h3 className="mt-1 text-lg font-bold text-slate-900">Новый клиентский поток: мы, рынок и конкуренты</h3>
                 <p className="mt-1 text-xs text-slate-500">Открытия за месяц · ближайшие конкуренты · 2025-01 — 2026-05</p>
               </div>
-              {modeToggle([
+              {modeToggle<'accounts' | 'clients' | 'accountShare' | 'clientShare'>([
                 ['accounts', 'Счета'], ['clients', 'Клиенты'],
                 ['accountShare', 'Доля по счетам'], ['clientShare', 'Доля по клиентам'],
               ], acqMode, setAcqMode)}
@@ -258,7 +258,7 @@ export const PortfolioDynamics = ({ ownName, filters, setFilters, openSegment }:
                 <h3 className="mt-1 text-lg font-bold text-slate-900">Переход нового клиента к первой торговой активности</h3>
                 <p className="mt-1 text-xs text-slate-500">Три этапа активации · мы, ближайшие конкуренты и рынок</p>
               </div>
-              {modeToggle([['absolute', 'Клиенты'], ['share', 'Доля рынка']], actMode, setActMode)}
+              {modeToggle<'absolute' | 'share'>([['absolute', 'Клиенты'], ['share', 'Доля рынка']], actMode, setActMode)}
             </div>
             <div className="mt-4 grid gap-2 md:grid-cols-3">
               {(Object.entries(ACTIVATION_LABELS) as [ActivationStage, string][]).map(([key, label]) => (
@@ -327,7 +327,7 @@ export const PortfolioDynamics = ({ ownName, filters, setFilters, openSegment }:
                 <h3 className="mt-1 text-lg font-bold text-slate-900">Масштаб и активность клиентского портфеля</h3>
                 <p className="mt-1 text-xs text-slate-500">Оборот, активы и месячная активная аудитория · мы, конкуренты и рынок</p>
               </div>
-              {modeToggle([['absolute', 'Объём'], ['share', 'Доля рынка']], portMode, setPortMode)}
+              {modeToggle<'absolute' | 'share'>([['absolute', 'Объём'], ['share', 'Доля рынка']], portMode, setPortMode)}
             </div>
             <div className="mt-4 grid gap-2 md:grid-cols-3">
               {(Object.entries(PORTFOLIO_LABELS) as [PortfolioMetric, string][]).map(([key, label]) => {
@@ -396,7 +396,7 @@ export const PortfolioDynamics = ({ ownName, filters, setFilters, openSegment }:
                 <h3 className="mt-1 text-lg font-bold text-slate-900">Потери клиентской базы: мы, рынок и конкуренты</h3>
                 <p className="mt-1 text-xs text-slate-500">Спящие клиенты, обнуление активов и закрытие счетов · 2025-01 — 2026-05</p>
               </div>
-              {modeToggle([['absolute', 'Клиенты'], ['share', 'Доля оттока']], churnMode, setChurnMode)}
+              {modeToggle<'absolute' | 'share'>([['absolute', 'Клиенты'], ['share', 'Доля оттока']], churnMode, setChurnMode)}
             </div>
             <div className="mt-4 grid gap-2 md:grid-cols-3">
               {(Object.entries(CHURN_LABELS) as [ChurnEvent, string][]).map(([key, label]) => {
