@@ -6,6 +6,9 @@ import { StatusBadge } from '../components/common';
 import { tasksService } from '../services';
 import { CheckSquare, Plus, Filter } from 'lucide-react';
 
+// '2026-06-09' → '09-06-2026'
+const formatDueDate = (date: string) => date.split('-').reverse().join('-');
+
 export const TasksPage = () => {
   const navigate = useNavigate();
   const { role } = useApp();
@@ -76,8 +79,7 @@ export const TasksPage = () => {
           <CheckSquare size={20} className="text-blue-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Задачи и договорённости</h1>
-          <p className="text-sm text-slate-500">Все активные задачи · 09.06.2026</p>
+          <h1 className="text-2xl font-bold text-slate-900">Задачи</h1>
         </div>
         <div className="ml-auto">
           <button className="btn-primary text-sm"><Plus size={15} /> Создать задачу</button>
@@ -177,8 +179,8 @@ export const TasksPage = () => {
         <table className="w-full data-table">
           <thead>
             <tr>
-              <th>Задача</th><th>Тип</th><th>Клиент/Холдинг</th>
-              <th>Приоритет</th>{role !== 'manager' && <th>Исполнитель</th>}<th>Срок</th><th>Статус</th>
+              <th>Задача</th><th>Клиент/Холдинг</th><th>Срок</th>
+              {role !== 'manager' && <th>Ответственный</th>}<th>Приоритет</th><th>Тип</th><th>Статус</th>
             </tr>
           </thead>
           <tbody>
@@ -194,7 +196,6 @@ export const TasksPage = () => {
                     <span className="text-xs font-medium text-slate-600">{initiativeOf(t.id, t.type)}</span>
                   </div>
                 </td>
-                <td><span className="badge-gray text-xs">{typeLabels[t.type]}</span></td>
                 <td>
                   <button
                     className="text-sm text-blue-600 hover:text-blue-800 font-medium"
@@ -203,17 +204,18 @@ export const TasksPage = () => {
                     {t.entityName}
                   </button>
                 </td>
+                <td className={`text-xs font-medium ${new Date(t.dueDate) < new Date() && t.status !== 'done' ? 'text-red-600' : 'text-slate-600'}`}>
+                  {formatDueDate(t.dueDate)}
+                </td>
+                {role !== 'manager' && (
+                  <td className="text-xs text-slate-600">{t.assigneeName}</td>
+                )}
                 <td>
                   <span className={`text-xs font-semibold px-1.5 py-0.5 rounded ${priorityColor[t.priority]}`}>
                     {priorityLabels[t.priority]}
                   </span>
                 </td>
-                {role !== 'manager' && (
-                  <td className="text-xs text-slate-600">{t.assigneeName}</td>
-                )}
-                <td className={`text-xs font-medium ${new Date(t.dueDate) < new Date() && t.status !== 'done' ? 'text-red-600' : 'text-slate-600'}`}>
-                  {t.dueDate}
-                </td>
+                <td><span className="badge-gray text-xs">{typeLabels[t.type]}</span></td>
                 <td><StatusBadge status={t.status} /></td>
               </tr>
             ))}

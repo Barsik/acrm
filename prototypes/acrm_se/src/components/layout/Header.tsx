@@ -24,7 +24,7 @@ const roleInitials: Record<string, string> = {
  * centered navigation lives in the separate floating SideNav pill.
  */
 export const Header = () => {
-  const { role, setRole, menuPosition } = useApp();
+  const { role, setRole, menuPosition, profilePhoto } = useApp();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -91,10 +91,14 @@ export const Header = () => {
               }}
             >
               <span style={{
-                width: 30, height: 30, borderRadius: 9, flexShrink: 0,
+                width: 30, height: 30, borderRadius: 9, flexShrink: 0, overflow: 'hidden',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: '#E8EBF0', color: '#3A4255', fontSize: 11, fontWeight: 700,
-              }}>{roleInitials[role]}</span>
+              }}>
+                {profilePhoto
+                  ? <img src={profilePhoto} alt="Профиль" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  : roleInitials[role]}
+              </span>
               <span style={{ fontSize: 12, fontWeight: 700, color: '#5A6478' }} className="hidden sm:inline">{roleLabels[role]}</span>
             </button>
             <button

@@ -1,15 +1,12 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Camera, Trash2, Mail, Phone, Briefcase, Building2, UserRound } from 'lucide-react';
 import { Layout } from '../components/layout/Layout';
 import { useApp } from '../context/AppContext';
-import { profilesByRole, profilePhotoKey } from '../data/profileData';
+import { profilesByRole } from '../data/profileData';
 
 export const ProfilePage = () => {
-  const { role } = useApp();
+  const { role, profilePhoto, setProfilePhoto } = useApp();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [photo, setPhoto] = useState<string | null>(() =>
-    role ? localStorage.getItem(profilePhotoKey(role)) : null,
-  );
 
   if (!role) return null;
   const profile = profilesByRole[role];
@@ -24,19 +21,12 @@ export const ProfilePage = () => {
     const file = event.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = String(reader.result);
-      setPhoto(dataUrl);
-      localStorage.setItem(profilePhotoKey(role), dataUrl);
-    };
+    reader.onload = () => setProfilePhoto(String(reader.result));
     reader.readAsDataURL(file);
     event.target.value = '';
   };
 
-  const handlePhotoRemove = () => {
-    setPhoto(null);
-    localStorage.removeItem(profilePhotoKey(role));
-  };
+  const handlePhotoRemove = () => setProfilePhoto(null);
 
   const fields = [
     { label: 'Email', value: profile.email, icon: <Mail size={15} /> },
@@ -54,8 +44,8 @@ export const ProfilePage = () => {
         {/* Фото */}
         <div className="card flex flex-col items-center p-6">
           <div className="flex h-40 w-40 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-slate-200 to-slate-300">
-            {photo ? (
-              <img src={photo} alt={profile.fullName} className="h-full w-full object-cover" />
+            {profilePhoto ? (
+              <img src={profilePhoto} alt={profile.fullName} className="h-full w-full object-cover" />
             ) : (
               <span className="text-4xl font-bold text-slate-500">{initials}</span>
             )}
@@ -73,7 +63,7 @@ export const ProfilePage = () => {
           >
             <Camera size={15} /> Загрузить фото
           </button>
-          {photo && (
+          {profilePhoto && (
             <button
               className="btn-secondary mt-2 w-full justify-center text-sm"
               onClick={handlePhotoRemove}

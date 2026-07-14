@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import type { UserRole } from '../types';
+import { profilePhotoKey } from '../data/profileData';
 
 export type MenuPosition = 'top' | 'left';
 
@@ -14,6 +15,8 @@ interface AppContextType {
   setSidebarOpen: (open: boolean) => void;
   menuPosition: MenuPosition;
   setMenuPosition: (p: MenuPosition) => void;
+  profilePhoto: string | null;
+  setProfilePhoto: (photo: string | null) => void;
 }
 
 const AppContext = createContext<AppContextType>({
@@ -25,11 +28,27 @@ const AppContext = createContext<AppContextType>({
   setSidebarOpen: () => {},
   menuPosition: 'top',
   setMenuPosition: () => {},
+  profilePhoto: null,
+  setProfilePhoto: () => {},
 });
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  const [role, setRole] = useState<UserRole | null>(null);
+  const [role, setRoleState] = useState<UserRole | null>(null);
+  const [profilePhoto, setProfilePhotoState] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const setRole = (r: UserRole | null) => {
+    setRoleState(r);
+    setProfilePhotoState(r ? localStorage.getItem(profilePhotoKey(r)) : null);
+  };
+
+  const setProfilePhoto = (photo: string | null) => {
+    setProfilePhotoState(photo);
+    if (role) {
+      if (photo) localStorage.setItem(profilePhotoKey(role), photo);
+      else localStorage.removeItem(profilePhotoKey(role));
+    }
+  };
   const [sidebarOpen, setSidebarOpen] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth >= 1024 : false
   );
@@ -44,7 +63,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AppContext.Provider value={{ role, setRole, searchQuery, setSearchQuery, sidebarOpen, setSidebarOpen, menuPosition, setMenuPosition }}>
+    <AppContext.Provider value={{ role, setRole, searchQuery, setSearchQuery, sidebarOpen, setSidebarOpen, menuPosition, setMenuPosition, profilePhoto, setProfilePhoto }}>
       {children}
     </AppContext.Provider>
   );
