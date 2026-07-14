@@ -1,6 +1,8 @@
 // Данные дашборда «Рынки» (Product Manager) — перенесено из pm_dashboard_product.html.
 // Самодостаточный модуль: справочники рынков + помесячные ряды + расчётные помощники.
 
+import { formatNumber } from '../utils/numberFormat';
+
 export interface BusinessLine {
   name: string;
   short: string;
@@ -200,13 +202,13 @@ export const activeLines = (currentBL: string): BusinessLine[] =>
 // ── ФОРМАТИРОВАНИЕ ───────────────────────────────────────────────
 
 export function fmtMoney(n: number): string {
-  if (n >= 1e12) return (n / 1e12).toFixed(2).replace(/\.?0+$/, '') + ' трлн ₽';
-  if (n >= 1e9) return (n / 1e9).toFixed(2).replace(/\.?0+$/, '') + ' млрд ₽';
-  if (n >= 1e6) return (n / 1e6).toFixed(1) + ' млн ₽';
-  if (n >= 1e3) return (n / 1e3).toFixed(0) + ' тыс ₽';
-  return n + ' ₽';
+  if (n >= 1e12) return `${formatNumber(n / 1e12)} трлн ₽`;
+  if (n >= 1e9) return `${formatNumber(n / 1e9)} млрд ₽`;
+  if (n >= 1e6) return `${formatNumber(n / 1e6)} млн ₽`;
+  if (n >= 1e3) return `${formatNumber(n / 1e3)} тыс ₽`;
+  return `${formatNumber(n)} ₽`;
 }
-export const fmtMln = (n: number): string => (n / 1e6).toFixed(1) + ' млн ₽';
+export const fmtMln = (n: number): string => `${formatNumber(n / 1e6)} млн ₽`;
 
 // Разделитель тысяч пробелами.
 export const fmtThousands = (n: number): string =>

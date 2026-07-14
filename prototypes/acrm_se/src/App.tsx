@@ -27,6 +27,7 @@ import { AgreementsPage } from './pages/AgreementsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { LoginPage } from './pages/LoginPage';
+import { BrokerPortalPage } from './pages/BrokerPortalPage';
 
 const roleHomePath: Record<string, string> = {
   ceo: '/ceo',
@@ -58,6 +59,7 @@ const AppRoutes = () => (
     <Route path="/clients/:id" element={<ClientDetailPage />} />
     <Route path="/holdings/:id" element={<HoldingPage />} />
     <Route path="/companies/:id" element={<CompanyPage />} />
+    <Route path="/broker/:companyId" element={<BrokerPortalPage />} />
     <Route path="/persons" element={<PersonsListPage />} />
     <Route path="/persons/:id" element={<PersonPage />} />
     <Route path="/alerts" element={<AlertsPage />} />

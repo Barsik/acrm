@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { ScoreBadge, StatusBadge, AlertItem, AIInsightCard, SectionHeader, TrendArrow } from '../components/common';
 import {
@@ -8,11 +7,12 @@ import {
 } from '../services';
 import { formatRevenue, formatVolume, mockCompanies } from '../data/mockData';
 import { Building, ChevronRight, Brain, Target, Calendar, FileText, Users, AlertTriangle } from 'lucide-react';
+import { BrokerPortfolioView, BrokerRankingView } from '../components/broker-analytics/BrokerAnalytics';
 
-const TABS = ['overview', 'products', 'operations', 'revenue', 'end_clients', 'contacts', 'alerts', 'tasks', 'strategy', 'documents'] as const;
+const TABS = ['overview', 'ranking', 'portfolio_analytics', 'products', 'operations', 'revenue', 'end_clients', 'contacts', 'alerts', 'tasks', 'strategy', 'documents'] as const;
 type TabId = typeof TABS[number];
 const TAB_LABELS: Record<TabId, string> = {
-  overview: 'Обзор', products: 'Продукты и сервисы', operations: 'Операции',
+  overview: 'Обзор', ranking: 'Рейтинг', portfolio_analytics: 'Аналитика портфеля', products: 'Продукты и сервисы', operations: 'Операции',
   revenue: 'Доходы', end_clients: 'Конечные клиенты', contacts: 'Контакты',
   alerts: 'Алерты', tasks: 'Задачи', strategy: 'Стратегия', documents: 'Документы',
 };
@@ -20,7 +20,14 @@ const TAB_LABELS: Record<TabId, string> = {
 export const CompanyPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<TabId>('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requestedTab = searchParams.get('tab');
+  const tab: TabId = TABS.includes(requestedTab as TabId) ? requestedTab as TabId : 'overview';
+  const setTab = (nextTab: TabId) => {
+    const next = new URLSearchParams(searchParams);
+    if (nextTab === 'overview') next.delete('tab'); else next.set('tab', nextTab);
+    setSearchParams(next, { replace: true });
+  };
 
   const company = companyService.getById(id || 'c1') || mockCompanies[0];
   const persons = personService.getByCompany(company.id);
@@ -311,6 +318,10 @@ export const CompanyPage = () => {
           </div>
         </div>
       )}
+
+      {tab === 'ranking' && <BrokerRankingView companyId={company.id} audience="crm" />}
+
+      {tab === 'portfolio_analytics' && <BrokerPortfolioView audience="crm" />}
 
       {(tab === 'products' || tab === 'operations' || tab === 'revenue' || tab === 'strategy' || tab === 'documents') && (
         <div className="bg-white rounded-xl border border-slate-200 p-8 text-center shadow-sm">

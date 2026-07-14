@@ -43,6 +43,15 @@ src/
 `/holdings` · `/holdings/:id` · `/companies/:id` · `/persons/:id`
 `/alerts` · `/tasks` · `/strategy` · `/cohorts` · `/events` · `/news`
 
+## Аналитика брокера
+
+- CRM-вкладка рейтинга Альфа-Банка: `/companies/c4?tab=ranking`
+- CRM-вкладка аналитики портфеля: `/companies/c4?tab=portfolio_analytics`
+- Самостоятельный кабинет брокера: `/broker/c4`
+
+CRM и кабинет брокера используют общие аналитические компоненты. В CRM доступны
+сравнительные показатели участников, а во внешнем кабинете конкуренты обезличены.
+
 ## Замена mock data на реальные API
 
 Все сервисы изолированы в `src/services/index.ts`.
