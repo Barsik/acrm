@@ -96,10 +96,10 @@ export const ClientDetailPage = () => {
   const persons = personService.getByCompany(String(client?.id ?? ''));
   const alerts = alertsService.getByEntity(String(client?.id ?? ''));
   const tasks = tasksService.getByEntity(String(client?.id ?? ''));
-  const insights = aiInsightsService.getByEntity(String(client?.holdingId ?? ''));
+  const insights = aiInsightsService.getByEntity(String(client?.id ?? ''));
   const products = productService.getByCompany(String(client?.id ?? ''));
-  const strategy = strategyService.getByEntity(String(client?.holdingId ?? ''));
-  const news = newsService.getByEntity(String(client?.holdingId ?? ''));
+  const strategy = strategyService.getByEntity(String(client?.id ?? ''));
+  const news = newsService.getByEntity(String(client?.id ?? ''));
   const healthScore = client?.id % 3 === 0 ? 72 : 68;
   const primaryStatus = client?.status === 'Активный' ? 'Активен' : 'Неактивен';
 
