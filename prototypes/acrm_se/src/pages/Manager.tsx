@@ -1,10 +1,10 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
-import { KPICard, ScoreBadge, AlertItem, SectionHeader, StatusBadge, AIInsightCard, TrendArrow, PageTitle, Card, ProgressBar } from '../components/common';
-import { holdingService, alertsService, tasksService, aiInsightsService, agreementsService, newsService, opportunitiesService } from '../services';
+import { KPICard, ScoreBadge, SectionHeader, StatusBadge, TrendArrow, PageTitle, Card, ProgressBar } from '../components/common';
+import { holdingService, alertsService, tasksService, newsService, opportunitiesService } from '../services';
 import { formatRevenue, formatVolume } from '../data/mockData';
-import { UserCheck, AlertTriangle, CheckSquare, Target, Calendar, Brain, ChevronRight, FileText, Phone, Users, Search, Clock, Frown, TrendingDown, Package, Cake, BarChart3, Ban } from 'lucide-react';
+import { UserCheck, AlertTriangle, CheckSquare, Target, ChevronRight, Search, Clock, Frown, TrendingDown, Package, Cake, BarChart3, Ban } from 'lucide-react';
 import { heatClients, getHeatAlerts, heatAlertScore, heatDaysAgo, heatFmt } from '../data/heatmap';
 
 const MANAGER_ID = 'mgr1';
@@ -24,8 +24,6 @@ export const ManagerPage = () => {
   const holdings = holdingService.getByManager(MANAGER_ID);
   const alerts = alertsService.getByManager(MANAGER_ID);
   const tasks = tasksService.getByAssignee(MANAGER_ID);
-  const insights = aiInsightsService.getAll();
-  const agreements = agreementsService.getExpiring();
   const news = newsService.getRecent(3);
   const opportunities = opportunitiesService.getAll().filter(o => o.assigneeId === MANAGER_ID);
 
@@ -78,12 +76,6 @@ export const ManagerPage = () => {
     })(),
   ];
 
-  const nextBestActions = [
-    { action: 'Встреча с ВТБ Капитал — обсудить падение оборотов', priority: 'critical', entity: 'ВТБ Капитал' },
-    { action: 'Подать заявку на перевыпуск СКЗИ для Сбер Инвестиции', priority: 'high', entity: 'Сбер Инвестиции' },
-    { action: 'Подготовить предложение по товарному рынку для Сбербанка', priority: 'high', entity: 'Группа Сбербанк' },
-  ];
-
   // ── Тепловая карта (heatmap) ────────────────────────────────
   const HEAT_PAGE_SIZE = 6;
   const [heatSearch, setHeatSearch] = useState('');
@@ -128,11 +120,6 @@ export const ManagerPage = () => {
         icon={<UserCheck size={22} />}
         accent="#12A05C"
         title="Мой клиентский портфель"
-        subtitle="Алексей Воронов · Менеджер · 09.06.2026"
-        actions={<>
-          <button className="btn-secondary" onClick={() => navigate('/tasks')}><CheckSquare size={15} /> Задачи ({tasks.length})</button>
-          <button className="btn-secondary" onClick={() => navigate('/alerts')}><AlertTriangle size={15} /> Алерты ({alerts.length})</button>
-        </>}
       />
 
       {/* Annual KPI */}
@@ -297,30 +284,8 @@ export const ManagerPage = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* LEFT: portfolio + tasks */}
+        {/* LEFT: portfolio */}
         <div className="lg:col-span-2 space-y-4">
-
-          {/* "Что требует внимания сегодня" */}
-          <div className="bg-gradient-to-r from-blue-700 to-blue-800 rounded-xl p-4 text-white">
-            <div className="flex items-center gap-2 mb-3">
-              <Brain size={16} className="text-blue-200" />
-              <h3 className="text-sm font-semibold">Что требует внимания сегодня</h3>
-              <span className="ml-auto text-xs text-blue-200">AI · 09.06.2026</span>
-            </div>
-            <div className="space-y-2">
-              {nextBestActions.map((a, i) => (
-                <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-white/10">
-                  <span className={`mt-0.5 w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold flex-shrink-0 ${a.priority === 'critical' ? 'bg-red-400' : 'bg-amber-400'}`}>
-                    {i + 1}
-                  </span>
-                  <div>
-                    <div className="text-xs font-semibold">{a.action}</div>
-                    <div className="text-xs text-blue-200">{a.entity}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
 
           {/* Holdings portfolio */}
           <div className="card overflow-hidden">
@@ -362,79 +327,10 @@ export const ManagerPage = () => {
             </div>
           </div>
 
-          {/* Tasks */}
-          <div className="card overflow-hidden">
-            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-              <h2 className="section-title">Задачи</h2>
-              <button className="btn-primary text-xs" onClick={() => navigate('/tasks')}><CheckSquare size={14} /> Все задачи</button>
-            </div>
-            <div className="overflow-x-auto">
-            <table className="w-full data-table">
-              <thead>
-                <tr><th>Задача</th><th>Клиент</th><th>Приоритет</th><th>Срок</th><th>Статус</th><th></th></tr>
-              </thead>
-              <tbody>
-                {tasks.map(t => (
-                  <tr key={t.id} className="hover:bg-slate-50">
-                    <td>
-                      <div className="text-sm font-medium text-slate-900 max-w-xs truncate">{t.title}</div>
-                    </td>
-                    <td className="text-slate-500 text-xs">{t.entityName}</td>
-                    <td>
-                      <span className={`text-xs font-semibold px-1.5 py-0.5 rounded ${
-                        t.priority === 'critical' ? 'bg-red-100 text-red-700' :
-                        t.priority === 'high' ? 'bg-amber-100 text-amber-700' :
-                        'bg-slate-100 text-slate-600'
-                      }`}>
-                        {t.priority === 'critical' ? 'Критично' : t.priority === 'high' ? 'Высокий' : 'Средний'}
-                      </span>
-                    </td>
-                    <td className="text-xs text-slate-500">{t.dueDate}</td>
-                    <td><StatusBadge status={t.status} /></td>
-                    <td>
-                      <div className="flex gap-1">
-                        <button className="text-xs text-blue-600 hover:text-blue-800 px-2 py-1 rounded border border-blue-200 hover:bg-blue-50">Открыть</button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            </div>
-          </div>
         </div>
 
-        {/* RIGHT: alerts, expiring docs, news, actions */}
+        {/* RIGHT: opportunities, news */}
         <div className="space-y-4">
-          {/* Critical Alerts */}
-          <div className="card p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-slate-900">Критичные алерты</h3>
-              <button className="text-xs text-red-600 hover:text-red-800" onClick={() => navigate('/alerts')}>Все →</button>
-            </div>
-            {criticalAlerts.slice(0, 3).map(a => (
-              <AlertItem key={a.id} title={a.title} description={a.description} severity={a.severity} date={a.date} action="Действие" onAction={() => navigate('/alerts')} />
-            ))}
-          </div>
-
-          {/* Expiring docs */}
-          <div className="card p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <FileText size={14} className="text-amber-500" />
-              <h3 className="text-sm font-semibold text-slate-900">Истекающие документы</h3>
-            </div>
-            {agreements.map(ag => (
-              <div key={ag.id} className="flex items-center gap-2 p-2 rounded-lg bg-amber-50 border border-amber-100 mb-2">
-                <div className="flex-1">
-                  <div className="text-xs font-semibold text-slate-900">{ag.entityName}</div>
-                  <div className="text-xs text-slate-600">{ag.title}</div>
-                  <div className="text-xs text-amber-600 font-medium">Истекает: {ag.expiresDate}</div>
-                </div>
-                <button className="text-xs text-blue-600 hover:text-blue-800">→</button>
-              </div>
-            ))}
-          </div>
-
           {/* Opportunities */}
           <div className="card p-4">
             <div className="flex items-center gap-2 mb-3">
@@ -464,32 +360,6 @@ export const ManagerPage = () => {
             ))}
           </div>
 
-          {/* Manager Actions */}
-          <div className="card p-4">
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">Быстрые действия</h3>
-            <div className="space-y-1.5">
-              {[
-                { label: 'Открыть карточку холдинга', path: '/holdings', icon: <Users size={13} /> },
-                { label: 'Запланировать встречу', path: '/tasks', icon: <Calendar size={13} /> },
-                { label: 'Сформировать brief', path: '/tasks', icon: <FileText size={13} /> },
-                { label: 'Next Best Actions', path: '/tasks', icon: <Brain size={13} /> },
-                { label: 'История коммуникаций', path: '/persons', icon: <Phone size={13} /> },
-              ].map(a => (
-                <button key={a.label} className="btn-secondary w-full justify-start text-xs" onClick={() => navigate(a.path)}>
-                  {a.icon} {a.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* AI Insights */}
-          <div className="card p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Brain size={14} className="text-violet-600" />
-              <h3 className="text-sm font-semibold text-slate-900">AI-рекомендации</h3>
-            </div>
-            <AIInsightCard title={insights[2]?.title || 'Рекомендации'} body={insights[2]?.body || '...'} confidence={insights[2]?.confidence || 95} type="next_action" />
-          </div>
         </div>
       </div>
     </Layout>

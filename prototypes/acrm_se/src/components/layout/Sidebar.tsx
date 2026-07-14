@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Building2, Users, AlertTriangle, CheckSquare,
   Calendar, Package, Globe, Activity, Filter, Gauge, Lightbulb,
-  BookOpen, Sparkles,
+  BookOpen, Sparkles, Briefcase,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { SearchBox } from './SearchBox';
@@ -23,6 +23,7 @@ const navItems: NavItem[] = [
   { label: 'Задачи', icon: <CheckSquare size={ICON} strokeWidth={1.8} />, path: '/tasks', badge: 8 },
   { label: 'Алерты', icon: <AlertTriangle size={ICON} strokeWidth={1.8} />, path: '/alerts', badge: 5 },
   { label: 'Клиенты', icon: <Users size={ICON} strokeWidth={1.8} />, path: '/clients' },
+  { label: 'Мой портфель', icon: <Briefcase size={ICON} strokeWidth={1.8} />, path: '/manager', roles: ['manager'] },
   { label: 'Монитор активности', icon: <Activity size={ICON} strokeWidth={1.8} />, path: '/activity' },
   { label: 'Продукты', icon: <Package size={ICON} strokeWidth={1.8} />, path: '/products' },
   { label: 'Воронка продаж', icon: <Filter size={ICON} strokeWidth={1.8} />, path: '/funnel' },
