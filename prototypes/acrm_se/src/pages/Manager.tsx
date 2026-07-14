@@ -2,9 +2,9 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { KPICard, ScoreBadge, SectionHeader, StatusBadge, TrendArrow, PageTitle, Card, ProgressBar } from '../components/common';
-import { holdingService, alertsService, tasksService, newsService, opportunitiesService } from '../services';
+import { holdingService, newsService, opportunitiesService } from '../services';
 import { formatRevenue, formatVolume } from '../data/mockData';
-import { UserCheck, AlertTriangle, CheckSquare, Target, ChevronRight, Search, Clock, Frown, TrendingDown, Package, Cake, BarChart3, Ban } from 'lucide-react';
+import { UserCheck, AlertTriangle, Target, ChevronRight, Search, Clock, Frown, TrendingDown, Package, Cake, BarChart3, Ban } from 'lucide-react';
 import { heatClients, getHeatAlerts, heatAlertScore, heatDaysAgo, heatFmt } from '../data/heatmap';
 
 const MANAGER_ID = 'mgr1';
@@ -22,16 +22,12 @@ const HEAT_ALERT_ICON: Record<string, typeof AlertTriangle> = {
 export const ManagerPage = () => {
   const navigate = useNavigate();
   const holdings = holdingService.getByManager(MANAGER_ID);
-  const alerts = alertsService.getByManager(MANAGER_ID);
-  const tasks = tasksService.getByAssignee(MANAGER_ID);
   const news = newsService.getRecent(3);
   const opportunities = opportunitiesService.getAll().filter(o => o.assigneeId === MANAGER_ID);
 
   const totalRevenue = holdings.reduce((s, h) => s + h.revenueYTD, 0);
   const totalPrevRevenue = holdings.reduce((s, h) => s + h.revenuePrevYTD, 0);
   const totalVolume = holdings.reduce((s, h) => s + h.volumeYTD, 0);
-  const overdueTasks = tasks.filter(t => t.status === 'overdue' || (t.status !== 'done' && new Date(t.dueDate) < new Date()));
-  const criticalAlerts = alerts.filter(a => a.severity === 'critical' || a.severity === 'high');
 
   // Annual KPI
   const ANN_REVENUE_PLAN = 4_800_000_000;
@@ -139,6 +135,11 @@ export const ManagerPage = () => {
               </div>
             </div>
           ))}
+        </div>
+        {/* Portfolio totals — second row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+          <KPICard label="Доход портфеля YTD" value={formatRevenue(totalRevenue)} change={{ current: totalRevenue, prev: totalPrevRevenue }} icon={<Target size={16} />} accent="blue" />
+          <KPICard label="Оборот портфеля YTD" value={formatVolume(totalVolume)} icon={<Target size={16} />} accent="violet" />
         </div>
       </Card>
 
@@ -273,14 +274,6 @@ export const ManagerPage = () => {
             >Вперёд →</button>
           </div>
         </div>
-      </div>
-
-      {/* KPI */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <KPICard label="Доход портфеля YTD" value={formatRevenue(totalRevenue)} change={{ current: totalRevenue, prev: totalPrevRevenue }} icon={<Target size={16} />} accent="blue" />
-        <KPICard label="Оборот портфеля YTD" value={formatVolume(totalVolume)} icon={<Target size={16} />} accent="violet" />
-        <KPICard label="Критичных алертов" value={String(criticalAlerts.length)} sub="Требуют действий сегодня" icon={<AlertTriangle size={16} />} accent="red" onClick={() => navigate('/alerts')} />
-        <KPICard label="Просрочено задач" value={String(overdueTasks.length)} icon={<CheckSquare size={16} />} accent="amber" onClick={() => navigate('/tasks')} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">

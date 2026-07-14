@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Bell, LogOut, ChevronDown, Settings } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { MoexLogo } from '../MoexLogo';
+import { NotificationsPanel } from './NotificationsPanel';
+import { initialNotifications } from '../../data/notificationsData';
 
 const roleLabels: Record<string, string> = {
   ceo: 'CEO / Правление',
@@ -25,6 +27,9 @@ export const Header = () => {
   const { role, setRole, menuPosition } = useApp();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState(initialNotifications);
+  const unreadCount = notifications.filter(n => !n.read).length;
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -63,14 +68,16 @@ export const Header = () => {
           onMouseEnter={hoverIn} onMouseLeave={hoverOut}>
           <Settings size={18} strokeWidth={1.8} />
         </button>
-        <button style={iconBtn} title="Уведомления"
+        <button style={iconBtn} title="Уведомления" onClick={() => setNotificationsOpen(true)}
           onMouseEnter={hoverIn} onMouseLeave={hoverOut}>
           <Bell size={18} strokeWidth={1.8} />
-          <span style={{
-            position: 'absolute', top: 4, right: 4, width: 15, height: 15, borderRadius: '50%',
-            background: '#E8001C', color: '#fff', fontSize: 9, fontWeight: 700,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>4</span>
+          {unreadCount > 0 && (
+            <span style={{
+              position: 'absolute', top: 4, right: 4, width: 15, height: 15, borderRadius: '50%',
+              background: '#E8001C', color: '#fff', fontSize: 9, fontWeight: 700,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>{unreadCount}</span>
+          )}
         </button>
 
         {role && (
@@ -100,6 +107,14 @@ export const Header = () => {
           </div>
         )}
       </div>
+
+      <NotificationsPanel
+        open={notificationsOpen}
+        notifications={notifications}
+        onClose={() => setNotificationsOpen(false)}
+        onMarkAllRead={() => setNotifications(prev => prev.map(n => ({ ...n, read: true })))}
+        onMarkRead={id => setNotifications(prev => prev.map(n => (n.id === id ? { ...n, read: true } : n)))}
+      />
     </header>
   );
 };

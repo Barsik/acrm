@@ -29,7 +29,7 @@ export const accessTable: AccessRecord[] = [
   { login: 'admin_r@moex.com', role: 'leader' },
 ];
 
-export const demoPassword = '123456';
+export const demoPassword = 'Admin123';
 
 export const authenticateUser = (login: string, password: string) => {
   const normalizedLogin = login.trim().toLowerCase();

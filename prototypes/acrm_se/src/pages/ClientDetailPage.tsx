@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
-import { ScoreBadge, StatusBadge, AlertItem, AIInsightCard, SectionHeader, TrendArrow } from '../components/common';
+import { StatusBadge, AlertItem, AIInsightCard, SectionHeader } from '../components/common';
 import {
   alertsService, personService, tasksService,
-  aiInsightsService, productService, strategyService, newsService,
+  aiInsightsService, productService,
 } from '../services';
 import { clients as clientRecords } from '../data/mockDatabase';
+import { CompanyRankingTab } from '../features/ranking/CompanyRankingTab';
 import { formatRevenue, formatVolume } from '../data/mockData';
-import { Building, ChevronRight, Brain, Target, Calendar, FileText, Users, AlertTriangle, BarChart3 } from 'lucide-react';
+import { Building, ChevronRight, Brain, Target, Calendar, FileText, AlertTriangle, BarChart3 } from 'lucide-react';
 
 const TABS = ['overview', 'products', 'operations', 'revenue', 'end_clients', 'contacts', 'alerts', 'tasks', 'ratings', 'market_comparison', 'documents'] as const;
 type TabId = typeof TABS[number];
@@ -18,62 +19,11 @@ const TAB_LABELS: Record<TabId, string> = {
   alerts: 'Алерты', tasks: 'Задачи', ratings: 'Рейтинги', market_comparison: 'Сравнение с рынком', documents: 'Документы',
 };
 
-const RATING_PRODUCTS = [
-  { value: 'allMarkets', label: 'Все рынки' },
-  { value: 'equity', label: 'Акции' },
-  { value: 'bonds', label: 'Облигации' },
-  { value: 'derivatives', label: 'Срочный рынок' },
-  { value: 'fx', label: 'Валюта' },
-  { value: 'moneyMarket', label: 'Денежный рынок' },
-  { value: 'funds', label: 'Фонды' },
-];
-const RATING_CLIENT_TYPES = [
-  { value: 'fl', label: 'ФЛ' },
-  { value: 'ul', label: 'ЮЛ' },
-  { value: 'all', label: 'ФЛ + ЮЛ' },
-];
-const RATING_PRODUCT_DETAILS = [
-  { value: 'allProducts', label: 'Все продукты' },
-  { value: 'ruStocks', label: 'РФ акции' },
-  { value: 'foreignStocks', label: 'Иностр. акции' },
-  { value: 'depositaryReceipts', label: 'ДР' },
-  { value: 'ofz', label: 'ОФЗ' },
-  { value: 'corporateBonds', label: 'Корп. облигации' },
-  { value: 'municipalBonds', label: 'Муниц. облигации' },
-  { value: 'eurobonds', label: 'Еврообл.' },
-  { value: 'floaters', label: 'Флоатеры' },
-  { value: 'bpif', label: 'БПИФ' },
-  { value: 'etf', label: 'ETF' },
-  { value: 'closedFunds', label: 'ЗПИФ' },
-  { value: 'fxSpot', label: 'Валюта spot' },
-];
-const RATING_VALUE_MODES = [
-  { value: 'absolute', label: 'Абсолюты' },
-  { value: 'share', label: 'Доля рынка' },
-];
 const BENCHMARK_METRICS = [
   { value: 'turnover', label: 'Обороты' },
   { value: 'auc', label: 'AuC' },
   { value: 'clients', label: 'Клиенты' },
 ];
-const RATING_TREND_METRICS = [
-  { value: 'clients', label: 'Клиенты' },
-  { value: 'turnover', label: 'Оборот' },
-  { value: 'auc', label: 'AuC' },
-];
-const RATING_TREND_PERIODS = [
-  { value: 'current', label: 'Текущий год' },
-  { value: 'previous', label: 'Предыдущий год' },
-  { value: 'last12', label: 'Последние 12 месяцев' },
-];
-
-const RATING_TABLE = [
-  { name: 'Тинькофф', note: 'Мы', clients: '178k', turnover: '213 млрд', auc: '6,4 трлн' },
-  { name: 'Сбербанк', note: 'TOP', clients: '198k', turnover: '256 млрд', auc: '7,2 трлн' },
-  { name: 'Газпромбанк', note: 'Peer', clients: '90k', turnover: '132 млрд', auc: '3,1 трлн' },
-  { name: 'ВТБ', note: 'Peer', clients: '106k', turnover: '148 млрд', auc: '4,0 трлн' },
-];
-
 const BENCHMARK_ROWS = [
   { name: 'Акции', own: '84,2', market: '113,4', rank: 4 },
   { name: 'Облигации', own: '112,6', market: '98,7', rank: 7 },
@@ -84,13 +34,7 @@ export const ClientDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [tab, setTab] = useState<TabId>('overview');
-  const [ratingProduct, setRatingProduct] = useState(RATING_PRODUCTS[0].value);
-  const [ratingClientType, setRatingClientType] = useState(RATING_CLIENT_TYPES[0].value);
-  const [ratingProductDetail, setRatingProductDetail] = useState(RATING_PRODUCT_DETAILS[0].value);
-  const [ratingValueMode, setRatingValueMode] = useState(RATING_VALUE_MODES[0].value);
   const [benchmarkMetric, setBenchmarkMetric] = useState(BENCHMARK_METRICS[0].value);
-  const [ratingTrendMetric, setRatingTrendMetric] = useState(RATING_TREND_METRICS[0].value);
-  const [ratingTrendPeriod, setRatingTrendPeriod] = useState(RATING_TREND_PERIODS[0].value);
 
   const client = clientRecords.find((item) => item.id === Number(id));
   const persons = personService.getByCompany(String(client?.id ?? ''));
@@ -98,8 +42,6 @@ export const ClientDetailPage = () => {
   const tasks = tasksService.getByEntity(String(client?.id ?? ''));
   const insights = aiInsightsService.getByEntity(String(client?.id ?? ''));
   const products = productService.getByCompany(String(client?.id ?? ''));
-  const strategy = strategyService.getByEntity(String(client?.id ?? ''));
-  const news = newsService.getByEntity(String(client?.id ?? ''));
   const healthScore = client?.id % 3 === 0 ? 72 : 68;
   const primaryStatus = client?.status === 'Активный' ? 'Активен' : 'Неактивен';
 
@@ -376,214 +318,7 @@ export const ClientDetailPage = () => {
         </div>
       )}
 
-      {tab === 'ratings' && (
-        <div className="space-y-4">
-          <div className="card p-5">
-            <div className="flex items-start justify-between gap-3 mb-4">
-              <div>
-                <h2 className="text-lg font-semibold text-slate-900">Параметры рейтинга</h2>
-                <p className="text-sm text-slate-500">Сначала выбирается клиентский тип и рынок/продукт. Дальше таблица показывает первые 4 брокера, разрыв и ближайших конкурентов.</p>
-              </div>
-              <div className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">12 участников сравнения</div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="grid gap-4 lg:grid-cols-2">
-                <div>
-                  <h3 className="text-sm font-semibold text-slate-700 mb-2">Тип клиента</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {RATING_CLIENT_TYPES.map((item) => (
-                      <button
-                        key={item.value}
-                        type="button"
-                        onClick={() => setRatingClientType(item.value)}
-                        className={`metric-control ${ratingClientType === item.value ? 'active' : ''} rounded-full border px-3 py-2 text-sm ${ratingClientType === item.value ? 'bg-slate-900 text-white' : 'bg-white text-slate-700 border-slate-200'}`}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-slate-700 mb-2">Рынок / продукт</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {RATING_PRODUCTS.map((item) => (
-                      <button
-                        key={item.value}
-                        type="button"
-                        onClick={() => setRatingProduct(item.value)}
-                        className={`metric-control ${ratingProduct === item.value ? 'active' : ''} rounded-full border px-3 py-2 text-sm ${ratingProduct === item.value ? 'bg-slate-900 text-white' : 'bg-white text-slate-700 border-slate-200'}`}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-sm font-semibold text-slate-700 mb-2">Детализация продукта</h3>
-                <div className="flex flex-wrap gap-2">
-                  {RATING_PRODUCT_DETAILS.map((item) => (
-                    <button
-                      key={item.value}
-                      type="button"
-                      onClick={() => setRatingProductDetail(item.value)}
-                      className={`detail-pill ${ratingProductDetail === item.value ? 'active' : ''}`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="card p-5">
-            <div className="flex items-start justify-between gap-3 mb-4">
-              <div>
-                <h2 className="text-lg font-semibold text-slate-900">Таблица рейтинга брокеров</h2>
-                <p className="text-sm text-slate-500">Без ручной сортировки видны первые 4 брокера, разрыв и ближайшие конкуренты.</p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {RATING_VALUE_MODES.map((item) => (
-                  <button
-                    key={item.value}
-                    type="button"
-                    onClick={() => setRatingValueMode(item.value)}
-                    className={`metric-control ${ratingValueMode === item.value ? 'active' : ''} rounded-full border px-3 py-2 text-sm ${ratingValueMode === item.value ? 'bg-slate-900 text-white' : 'bg-white text-slate-700 border-slate-200'}`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="text-xs text-slate-500 uppercase tracking-[0.18em] border-b border-slate-200">
-                    <th className="py-3">Брокер</th>
-                    <th className="py-3">Кол-во клиентов</th>
-                    <th className="py-3">Оборот</th>
-                    <th className="py-3">AuC</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {RATING_TABLE.map((row) => (
-                    <tr key={row.name} className="hover:bg-slate-50">
-                      <td className="py-3 align-top">
-                        <div className="font-semibold text-slate-900">{row.name}</div>
-                        <small className="text-xs text-slate-500">{row.note}</small>
-                      </td>
-                      <td className="py-3 text-slate-700">{row.clients}</td>
-                      <td className="py-3 text-slate-700">{row.turnover}</td>
-                      <td className="py-3 text-slate-700">{row.auc}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="card p-5">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-4">
-              <div>
-                <h2 className="text-lg font-semibold text-slate-900">Сравнение с рынком и группой</h2>
-                <p className="text-sm text-slate-500">Основные показатели по рынкам: значение клиента, рынок и место.</p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {BENCHMARK_METRICS.map((item) => (
-                  <button
-                    key={item.value}
-                    type="button"
-                    onClick={() => setBenchmarkMetric(item.value)}
-                    className={`metric-control ${benchmarkMetric === item.value ? 'active' : ''} rounded-full border px-3 py-2 text-sm ${benchmarkMetric === item.value ? 'bg-slate-900 text-white' : 'bg-white text-slate-700 border-slate-200'}`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="text-xs text-slate-500 uppercase tracking-[0.18em] border-b border-slate-200">
-                    <th className="py-3">Класс актива</th>
-                    <th className="py-3">Мы</th>
-                    <th className="py-3">Рынок</th>
-                    <th className="py-3">Место</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {BENCHMARK_ROWS.map((row) => (
-                    <tr key={row.name} className="hover:bg-slate-50">
-                      <td className="py-3 font-semibold text-slate-900">{row.name}</td>
-                      <td className="py-3 text-slate-700">{row.own}</td>
-                      <td className="py-3 text-slate-700">{row.market}</td>
-                      <td className="py-3 text-slate-700">{row.rank}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="card p-5">
-            <div className="flex items-start justify-between gap-3 mb-4">
-              <div>
-                <h2 className="text-lg font-semibold text-slate-900">Динамика рейтинга</h2>
-                <p className="text-sm text-slate-500">Место клиента, абсолютное значение и доля рынка по выбранному показателю.</p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {RATING_TREND_METRICS.map((item) => (
-                  <button
-                    key={item.value}
-                    type="button"
-                    onClick={() => setRatingTrendMetric(item.value)}
-                    className={`metric-control ${ratingTrendMetric === item.value ? 'active' : ''} rounded-full border px-3 py-2 text-sm ${ratingTrendMetric === item.value ? 'bg-slate-900 text-white' : 'bg-white text-slate-700 border-slate-200'}`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-                {RATING_TREND_PERIODS.map((item) => (
-                  <button
-                    key={item.value}
-                    type="button"
-                    onClick={() => setRatingTrendPeriod(item.value)}
-                    className={`metric-control ${ratingTrendPeriod === item.value ? 'active' : ''} rounded-full border px-3 py-2 text-sm ${ratingTrendPeriod === item.value ? 'bg-slate-900 text-white' : 'bg-white text-slate-700 border-slate-200'}`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
-              <div className="mb-4">
-                <div className="text-xs uppercase tracking-[0.18em] text-slate-500 mb-1">{ratingTrendMetric === 'clients' ? 'Клиенты' : ratingTrendMetric === 'turnover' ? 'Оборот' : 'AuC'} · {ratingTrendPeriod === 'current' ? 'Текущий год' : ratingTrendPeriod === 'previous' ? 'Предыдущий год' : 'Последние 12 месяцев'}</div>
-                <div className="text-base font-semibold text-slate-900">Фильтр: {RATING_PRODUCTS.find((item) => item.value === ratingProduct)?.label} · {ratingClientType.toUpperCase()}</div>
-                <div className="text-sm text-slate-500">Место, абсолют, доля рынка.</div>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-2xl bg-white p-4 border border-slate-200">
-                  <div className="text-xs text-slate-500 mb-2">Место в рейтинге</div>
-                  <div className="text-2xl font-semibold text-slate-900">3</div>
-                  <div className="text-xs text-slate-500 mt-1">лучше на 2 места за период</div>
-                </div>
-                <div className="rounded-2xl bg-white p-4 border border-slate-200">
-                  <div className="text-xs text-slate-500 mb-2">Абсолютное значение</div>
-                  <div className="text-2xl font-semibold text-slate-900">₽ 213 млрд</div>
-                  <div className="text-xs text-slate-500 mt-1">+12,8 млрд за период</div>
-                </div>
-                <div className="rounded-2xl bg-white p-4 border border-slate-200">
-                  <div className="text-xs text-slate-500 mb-2">Доля рынка</div>
-                  <div className="text-2xl font-semibold text-slate-900">14,8%</div>
-                  <div className="text-xs text-slate-500 mt-1">+1,3 п.п. за период</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {tab === 'ratings' && <CompanyRankingTab companyName={client.name} />}
 
       {tab === 'market_comparison' && (
         <div className="space-y-4">
