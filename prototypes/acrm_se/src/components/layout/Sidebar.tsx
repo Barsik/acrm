@@ -36,7 +36,7 @@ const navItems: NavItem[] = [
 ];
 
 const roleHomePath: Record<string, string> = {
-  ceo: '/ceo', block_head: '/block-head', market_lead: '/market-lead', manager: '/manager', operations: '/operations',
+  ceo: '/ceo', block_head: '/block-head', market_lead: '/market-lead', manager: '/tasks', operations: '/operations',
 };
 
 export const Sidebar = () => {
@@ -48,7 +48,11 @@ export const Sidebar = () => {
 
   const left = menuPosition === 'left';
   const homePath = roleHomePath[role] || '/';
-  const filtered = navItems.filter(item => !item.roles || item.roles.includes(role));
+  const filtered = navItems.filter(item => (
+    (!item.roles || item.roles.includes(role))
+    // hide "Главная" (path '__role__') for manager in all layouts
+    && !(role === 'manager' && item.path === '__role__')
+  ));
 
   const isActive = (path: string) => {
     const resolved = path === '__role__' ? homePath : path;

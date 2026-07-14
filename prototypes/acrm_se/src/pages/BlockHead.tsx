@@ -7,7 +7,7 @@ import { Layout } from '../components/layout/Layout';
 import { KPICard, ScoreBadge, AIInsightCard, SectionHeader, StatusBadge, ProgressBar, TrendArrow, PageTitle } from '../components/common';
 import { portfolioService, alertsService, tasksService, revenueService, aiInsightsService, holdingService, opportunitiesService } from '../services';
 import { formatRevenue, formatVolume } from '../data/mockData';
-import { Briefcase, AlertTriangle, Target, TrendingUp, ChevronRight, Users, CheckSquare, Brain } from 'lucide-react';
+import { Briefcase, AlertTriangle, Target, TrendingUp, ChevronRight, Users, CheckSquare } from 'lucide-react';
 
 export const BlockHeadPage = () => {
   const navigate = useNavigate();
@@ -30,10 +30,6 @@ export const BlockHeadPage = () => {
         accent="#E8001C"
         title="Портфель блока"
         subtitle="Клиентский блок · 09.06.2026"
-        actions={<>
-          <button className="btn-secondary" onClick={() => navigate('/alerts')}><AlertTriangle size={15} /> В риске</button>
-          <button className="btn-primary"><Brain size={15} /> AI-сводка</button>
-        </>}
       />
 
       {/* KPI Row */}

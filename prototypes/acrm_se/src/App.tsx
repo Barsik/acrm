@@ -31,7 +31,7 @@ const roleHomePath: Record<string, string> = {
   ceo: '/ceo',
   block_head: '/block-head',
   market_lead: '/market-lead',
-  manager: '/manager',
+  manager: '/tasks',
   operations: '/operations',
 };
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useApp } from '../context/AppContext';
 import { Layout } from '../components/layout/Layout';
 import { StatusBadge } from '../components/common';
 import { tasksService } from '../services';
@@ -66,7 +67,7 @@ export const TasksPage = () => {
   };
   const initiativeOf = (id: string, type: string) =>
     initiativeById[id] ?? initiativeByType[type] ?? 'Прочие инициативы';
-
+  
   return (
     <Layout breadcrumbs={[{ label: 'Задачи' }]}>
       <div className="flex items-center gap-3 mb-6">
@@ -172,12 +173,70 @@ export const TasksPage = () => {
         })}
       </div>
 
+      {/* Filters */}
+      <div className="flex items-center gap-2 mb-5">
+        <span className="text-sm font-medium text-slate-700">
+          {filter === 'all' ? 'Все задачи' : filter === 'open' ? 'Открытые' : filter === 'in_progress' ? 'В работе' : 'Просроченные'}
+        </span>
+        <span className="text-xs text-slate-400">· {displayed.length}</span>
+        <div className="ml-auto flex items-center gap-3">
+          {/* Срок — segmented control */}
+          <div className="flex items-center gap-1">
+            <Filter size={13} className="text-slate-400 mr-0.5" />
+            {([
+              { key: 'all', label: 'Все' },
+              { key: 'today', label: 'Сегодня' },
+              { key: 'week', label: 'Следующая неделя' },
+              { key: 'month', label: 'Следующий месяц' },
+            ] as const).map(o => {
+              const active = dueFilter === o.key;
+              return (
+                <button
+                  key={o.key}
+                  onClick={() => setDueFilter(o.key)}
+                  className={`text-xs font-medium px-2.5 py-1 rounded-md border transition-colors ${
+                    active
+                      ? 'bg-moex-red/5 border-moex-red text-moex-red'
+                      : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
+                  }`}>
+                  {o.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Тип */}
+          <select
+            value={typeFilter}
+            onChange={e => setTypeFilter(e.target.value)}
+            className="text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-md px-2 py-1 hover:border-slate-300 focus:outline-none focus:border-moex-red"
+          >
+            <option value="all">Тип: все</option>
+            {Object.entries(typeLabels).map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
+
+          {/* Приоритет */}
+          <select
+            value={priorityFilter}
+            onChange={e => setPriorityFilter(e.target.value)}
+            className="text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-md px-2 py-1 hover:border-slate-300 focus:outline-none focus:border-moex-red"
+          >
+            <option value="all">Приоритет: любой</option>
+            {Object.entries(priorityLabels).map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       <div className="card overflow-hidden">
         <table className="w-full data-table">
           <thead>
             <tr>
               <th>Задача</th><th>Тип</th><th>Клиент/Холдинг</th>
-              <th>Приоритет</th><th>Исполнитель</th><th>Срок</th><th>Статус</th>
+              <th>Приоритет</th>{role !== 'manager' && <th>Исполнитель</th>}<th>Срок</th><th>Статус</th>
             </tr>
           </thead>
           <tbody>
@@ -207,7 +266,9 @@ export const TasksPage = () => {
                     {priorityLabels[t.priority]}
                   </span>
                 </td>
-                <td className="text-xs text-slate-600">{t.assigneeName}</td>
+                {role !== 'manager' && (
+                  <td className="text-xs text-slate-600">{t.assigneeName}</td>
+                )}
                 <td className={`text-xs font-medium ${new Date(t.dueDate) < new Date() && t.status !== 'done' ? 'text-red-600' : 'text-slate-600'}`}>
                   {t.dueDate}
                 </td>

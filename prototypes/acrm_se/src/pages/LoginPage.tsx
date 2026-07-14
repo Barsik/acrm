@@ -34,7 +34,7 @@ export const LoginPage = () => {
 
     setRole(roleMap[auth.access.role]);
     setError('');
-    navigate('/manager');
+    navigate('/');
   };
 
   return (
