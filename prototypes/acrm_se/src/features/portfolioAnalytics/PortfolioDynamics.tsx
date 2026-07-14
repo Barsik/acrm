@@ -48,9 +48,9 @@ const paceRows = (series: BrokerSeries, ownName: string): [string, number, strin
 };
 
 const modeToggle = <T extends string>(
-  options: [T, string][],
+  options: [NoInfer<T>, string][],
   current: T,
-  onChange: (value: T) => void,
+  onChange: (value: NoInfer<T>) => void,
 ) => (
   <div className="flex flex-wrap rounded-lg bg-slate-100 p-1">
     {options.map(([value, label]) => (
