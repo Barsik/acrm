@@ -8,6 +8,7 @@ import { CheckSquare, Plus, Filter } from 'lucide-react';
 
 export const TasksPage = () => {
   const navigate = useNavigate();
+  const { role } = useApp();
   const [filter, setFilter] = useState<'all' | 'open' | 'in_progress' | 'overdue'>('all');
   const [dueFilter, setDueFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
@@ -80,65 +81,6 @@ export const TasksPage = () => {
         </div>
         <div className="ml-auto">
           <button className="btn-primary text-sm"><Plus size={15} /> Создать задачу</button>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="flex items-center gap-2 mb-5">
-        <span className="text-sm font-medium text-slate-700">
-          {filter === 'all' ? 'Все задачи' : filter === 'open' ? 'Открытые' : filter === 'in_progress' ? 'В работе' : 'Просроченные'}
-        </span>
-        <span className="text-xs text-slate-400">· {displayed.length}</span>
-        <div className="ml-auto flex items-center gap-3">
-          {/* Срок — segmented control */}
-          <div className="flex items-center gap-1">
-            <Filter size={13} className="text-slate-400 mr-0.5" />
-            {([
-              { key: 'all', label: 'Все' },
-              { key: 'today', label: 'Сегодня' },
-              { key: 'week', label: 'Следующая неделя' },
-              { key: 'month', label: 'Следующий месяц' },
-            ] as const).map(o => {
-              const active = dueFilter === o.key;
-              return (
-                <button
-                  key={o.key}
-                  onClick={() => setDueFilter(o.key)}
-                  className={`text-xs font-medium px-2.5 py-1 rounded-md border transition-colors ${
-                    active
-                      ? 'bg-moex-red/5 border-moex-red text-moex-red'
-                      : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
-                  }`}
-                >
-                  {o.label}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Тип */}
-          <select
-            value={typeFilter}
-            onChange={e => setTypeFilter(e.target.value)}
-            className="text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-md px-2 py-1 hover:border-slate-300 focus:outline-none focus:border-moex-red"
-          >
-            <option value="all">Тип: все</option>
-            {Object.entries(typeLabels).map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
-            ))}
-          </select>
-
-          {/* Приоритет */}
-          <select
-            value={priorityFilter}
-            onChange={e => setPriorityFilter(e.target.value)}
-            className="text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-md px-2 py-1 hover:border-slate-300 focus:outline-none focus:border-moex-red"
-          >
-            <option value="all">Приоритет: любой</option>
-            {Object.entries(priorityLabels).map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
-            ))}
-          </select>
         </div>
       </div>
 
