@@ -3091,7 +3091,6 @@ export const BrokerPortfolioView = ({
     return {
       month: countMonth,
       onlyAlpha,
-      onlyAlphaLabel: index === 0 || index === trendMonths.length - 1 ? onlyAlpha : null,
       twoBrokers,
       threeFour,
       fivePlus,
@@ -3611,10 +3610,18 @@ export const BrokerPortfolioView = ({
                     <YAxis width={52} label={yAxisUnitLabel('%')} domain={[0,100]} ticks={[0,25,50,75,100]} tick={{fontSize:9}} tickFormatter={(value) => number.format(Number(value))} />
                     <Tooltip formatter={(value,name) => [`${number.format(Number(value))}%`,name]} />
                     <Legend wrapperStyle={{fontSize:9,paddingTop:8}} />
-                    <Bar dataKey="onlyAlpha" name="Только Альфа-Банк" stackId="count" fill="#E8001C"><LabelList dataKey="onlyAlphaLabel" position="center" fill="#FFFFFF" fontSize={8} fontWeight={700} formatter={(value) => value == null ? '' : `${number.format(Number(value))}%`} /></Bar>
-                    <Bar dataKey="twoBrokers" name="2 брокера" stackId="count" fill="#2563EB" />
-                    <Bar dataKey="threeFour" name="3–4 брокера" stackId="count" fill="#7C3AED" />
-                    <Bar dataKey="fivePlus" name="5 и более" stackId="count" fill="#64748B" radius={[3,3,0,0]} />
+                    <Bar dataKey="onlyAlpha" name="Только Альфа-Банк" stackId="count" fill="#E8001C">
+                      <LabelList dataKey="onlyAlpha" position="center" fill="#FFFFFF" fontSize={8} fontWeight={700} formatter={(value) => `${number.format(Number(value))}%`} />
+                    </Bar>
+                    <Bar dataKey="twoBrokers" name="2 брокера" stackId="count" fill="#2563EB">
+                      <LabelList dataKey="twoBrokers" position="center" fill="#FFFFFF" fontSize={8} fontWeight={700} formatter={(value) => `${number.format(Number(value))}%`} />
+                    </Bar>
+                    <Bar dataKey="threeFour" name="3–4 брокера" stackId="count" fill="#7C3AED">
+                      <LabelList dataKey="threeFour" position="center" fill="#FFFFFF" fontSize={8} fontWeight={700} formatter={(value) => `${number.format(Number(value))}%`} />
+                    </Bar>
+                    <Bar dataKey="fivePlus" name="5 и более" stackId="count" fill="#64748B" radius={[3,3,0,0]}>
+                      <LabelList dataKey="fivePlus" position="center" fill="#FFFFFF" fontSize={8} fontWeight={700} formatter={(value) => `${number.format(Number(value))}%`} />
+                    </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </div>
