@@ -78,17 +78,18 @@ export const Sidebar = () => {
     return location.pathname === resolved || location.pathname.startsWith(resolved + '/');
   };
 
-  // Горизонтальная пилюля (иконки + поиск). Позиционирование — только классами,
-  // чтобы media-варианты могли его переопределять:
-  //  - десктоп: по центру поверх шапки, ширина ограничена, лишнее скроллится;
-  //  - < md: опускается под шапку и растягивается на всю ширину.
+  // Горизонтальная пилюля (иконки + поиск).
+  // Внешний контейнер зафиксирован ровно в свободной зоне шапки — между логотипом
+  // (слева) и блоком настроек/профиля (справа), поэтому пилюля центруется в этой
+  // зоне и не может заехать на соседей; при нехватке места содержимое скроллится.
+  // < md пилюля опускается под шапку и растягивается на всю ширину.
   const horizontalPill = (extra: string) => (
-    <nav
-      className={`float-pill items-center gap-1 p-2 fixed z-50 top-2 left-1/2 -translate-x-1/2
-        max-w-[calc(100vw-380px)] overflow-x-auto
-        max-md:top-[70px] max-md:left-3 max-md:right-3 max-md:translate-x-0 max-md:max-w-none ${extra}`}
+    <div
+      className={`pointer-events-none fixed z-50 top-2 left-[130px] right-[280px] justify-center
+        max-md:top-[70px] max-md:left-3 max-md:right-3 ${extra}`}
     >
-      <SearchBox variant="pill" />
+      <nav className="float-pill pointer-events-auto flex items-center gap-1 p-2 max-w-full overflow-x-auto">
+        <SearchBox variant="pill" />
 
       {filtered.map(item => {
         const path = item.path === '__role__' ? homePath : item.path;
@@ -119,7 +120,8 @@ export const Sidebar = () => {
           </button>
         );
       })}
-    </nav>
+      </nav>
+    </div>
   );
 
   // ---- LEFT (vertical pill, with text labels; search lives in the header) ----
@@ -130,9 +132,10 @@ export const Sidebar = () => {
         <nav
           className="float-pill flex flex-col max-lg:hidden"
           style={{
-            position: 'fixed', top: '50%', left: 12, transform: 'translateY(-50%)', zIndex: 50,
+            // Центр области под шапкой (62px): пилюля не поднимается выше логотипа
+            position: 'fixed', top: 'calc(50% + 31px)', left: 12, transform: 'translateY(-50%)', zIndex: 50,
             gap: 3, padding: 8, width: 196,
-            maxHeight: 'calc(100vh - 24px)', overflowY: 'auto',
+            maxHeight: 'calc(100vh - 86px)', overflowY: 'auto',
           }}
         >
           {filtered.map(item => {
