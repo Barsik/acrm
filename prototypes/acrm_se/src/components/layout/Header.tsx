@@ -47,16 +47,18 @@ export const Header = () => {
   };
 
   return (
-    <header style={{
+    <header className="px-7 max-sm:px-4" style={{
       height: 62, background: '#F6F7FA', flexShrink: 0,
-      display: 'flex', alignItems: 'center', padding: '0 28px',
+      display: 'flex', alignItems: 'center',
       position: 'sticky', top: 0, zIndex: 40,
     }}>
       {/* MOEX logo. In left-menu mode the logo occupies a fixed zone so the search
           that follows lines up with the work-area content column (left-clearance
-          220 + 32 content padding − 28 header padding = 224). */}
+          220 + 32 content padding − 28 header padding = 224). < lg зона не нужна —
+          левой пилюли там нет. */}
       <div
-        style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', flexShrink: 0, width: menuPosition === 'left' ? 224 : undefined }}
+        className={menuPosition === 'left' ? 'lg:w-[224px]' : ''}
+        style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', flexShrink: 0 }}
         onClick={() => navigate('/')}
       >
         <MoexLogo height={26} />

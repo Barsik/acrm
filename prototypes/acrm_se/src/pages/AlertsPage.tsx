@@ -1,41 +1,81 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useApp } from '../context/AppContext';
 import { Layout } from '../components/layout/Layout';
-import { SeverityBadge, StatusBadge, PageTitle } from '../components/common';
+import { AlertStatusBadge } from '../components/common';
 import { alertsService } from '../services';
-import { AlertTriangle, AlertCircle, Info, CheckSquare, ChevronRight } from 'lucide-react';
+import { AlertViewModal, alertTypeLabels, severityLabels } from '../features/alerts/AlertViewModal';
+import { clientIdForEntity } from '../data/entityToClient';
+import { AlertTriangle, Filter } from 'lucide-react';
+import type { Alert } from '../types';
 
-const SEV: Record<string, { accent: string; Icon: typeof AlertTriangle }> = {
-  critical: { accent: '#E8001C', Icon: AlertCircle },
-  high: { accent: '#F5A623', Icon: AlertTriangle },
-  medium: { accent: '#4A90D9', Icon: Info },
+// '2026-06-09' → '09-06-2026'
+const formatDate = (date: string) => date.split('-').reverse().join('-');
+
+const severityColor: Record<string, string> = {
+  critical: 'bg-red-100 text-red-700',
+  high: 'bg-amber-100 text-amber-700',
+  medium: 'bg-blue-100 text-blue-700',
+  low: 'bg-slate-100 text-slate-600',
 };
 
 export const AlertsPage = () => {
   const navigate = useNavigate();
-  const [filter, setFilter] = useState<'all' | 'critical' | 'high' | 'medium'>('all');
+  const { role } = useApp();
+  const [filter, setFilter] = useState<'all' | 'new' | 'in_progress' | 'resolved'>('all');
+  const [severityFilter, setSeverityFilter] = useState<string>('all');
+  const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'period'>('all');
+  const [periodFrom, setPeriodFrom] = useState('');
+  const [periodTo, setPeriodTo] = useState('');
+  const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
   const all = alertsService.getAll();
-  const displayed = filter === 'all' ? all : all.filter(a => a.severity === filter);
 
-  const openEntity = (a: { entityType: string; entityId: string }) =>
-    navigate(a.entityType === 'holding' ? `/holdings/${a.entityId}` : `/companies/${a.entityId}`);
+  // Опорная «сегодняшняя» дата прототипа (как на странице задач)
+  const REF_DATE_ISO = '2026-06-09';
+  // ISO-строки дат сравниваются лексикографически
+  const matchesDate = (date: string) => {
+    if (dateFilter === 'all') return true;
+    if (dateFilter === 'today') return date === REF_DATE_ISO;
+    if (periodFrom && date < periodFrom) return false;
+    if (periodTo && date > periodTo) return false;
+    return true;
+  };
+
+  // Открытие нового алерта автоматически переводит его в работу
+  const openAlert = (alert: Alert) => {
+    if (alert.status === 'new') alertsService.update(alert.id, { status: 'in_progress' });
+    setSelectedAlert(alert);
+  };
+
+  const byStatus = filter === 'all' ? all : all.filter(a => a.status === filter);
+  const displayed = byStatus
+    .filter(a =>
+      matchesDate(a.date) &&
+      (typeFilter === 'all' || a.type === typeFilter) &&
+      (severityFilter === 'all' || a.severity === severityFilter)
+    )
+    // Закрытые алерты опускаются в конец списка (sort стабильный — остальной порядок сохраняется)
+    .sort((a, b) => Number(a.status === 'resolved') - Number(b.status === 'resolved'));
 
   return (
     <Layout breadcrumbs={[{ label: 'Алерты' }]}>
-      <PageTitle
-        icon={<AlertTriangle size={22} />}
-        accent="#E8001C"
-        title="Алерты и риски"
-        subtitle="Все активные алерты по портфелю · 09.06.2026"
-      />
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center">
+          <AlertTriangle size={20} className="text-moex-red" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Алерты</h1>
+        </div>
+      </div>
 
       {/* Stats — click a tile to filter */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-4 max-md:grid-cols-2 gap-4 max-sm:gap-3 mb-6">
         {([
           { key: 'all', label: 'Всего алертов', count: all.length, accent: '#5A6478' },
-          { key: 'critical', label: 'Критичных', count: all.filter(a => a.severity === 'critical').length, accent: '#E8001C' },
-          { key: 'high', label: 'Высоких', count: all.filter(a => a.severity === 'high').length, accent: '#F5A623' },
-          { key: 'medium', label: 'Средних', count: all.filter(a => a.severity === 'medium').length, accent: '#4A90D9' },
+          { key: 'new', label: 'Новых', count: all.filter(a => a.status === 'new').length, accent: '#4A90D9' },
+          { key: 'in_progress', label: 'В работе', count: all.filter(a => a.status === 'in_progress').length, accent: '#12A05C' },
+          { key: 'resolved', label: 'Закрытых', count: all.filter(a => a.status === 'resolved').length, accent: '#5A6478' },
         ] as const).map(s => {
           const active = filter === s.key;
           return (
@@ -60,68 +100,150 @@ export const AlertsPage = () => {
         })}
       </div>
 
-      <div className="space-y-3">
-        {displayed.map(a => {
-          const sev = SEV[a.severity] ?? SEV.medium;
-          const Icon = sev.Icon;
-          return (
-            <div
-              key={a.id}
-              className="card"
-              style={{ borderLeft: `4px solid ${sev.accent}`, borderRadius: '4px 16px 16px 4px', padding: 20 }}
-            >
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 12 }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, minWidth: 0 }}>
-                  <span style={{
-                    width: 38, height: 38, borderRadius: 10, flexShrink: 0,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    background: `${sev.accent}14`, color: sev.accent,
-                  }}>
-                    <Icon size={18} />
-                  </span>
-                  <div style={{ minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                      <h3 style={{ fontSize: 15, fontWeight: 700, color: '#1E2535', margin: 0 }}>{a.title}</h3>
-                      <SeverityBadge severity={a.severity} />
-                    </div>
-                    <button
-                      onClick={() => openEntity(a)}
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: 3, marginTop: 3, padding: 0, border: 'none', background: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700, color: '#5A6478', transition: 'color 0.15s' }}
-                      onMouseEnter={e => (e.currentTarget.style.color = '#E8001C')}
-                      onMouseLeave={e => (e.currentTarget.style.color = '#5A6478')}
-                    >
-                      {a.entityName} <ChevronRight size={13} />
-                    </button>
-                  </div>
-                </div>
-                <StatusBadge status={a.status} />
-              </div>
-
-              <p style={{ fontSize: 13, color: '#3A4255', lineHeight: 1.5, margin: '0 0 12px' }}>{a.description}</p>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, fontSize: 12, color: '#A0AABB', marginBottom: 12 }}>
-                <div><span style={{ fontWeight: 700, color: '#5A6478' }}>Источник:</span> {a.source}</div>
-                <div><span style={{ fontWeight: 700, color: '#5A6478' }}>Дата:</span> {a.date}</div>
-                <div><span style={{ fontWeight: 700, color: '#5A6478' }}>Ответственный:</span> {a.responsibleName}</div>
-              </div>
-
-              <div style={{ padding: '10px 14px', background: '#F6F7FA', border: '1px solid #E8EBF0', borderRadius: 10, marginBottom: 14 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#5A6478', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 3 }}>Рекомендуемое действие</div>
-                <div style={{ fontSize: 13, color: '#3A4255' }}>{a.recommendedAction}</div>
-              </div>
-
-              <div className="flex gap-2">
-                <button className="btn-primary text-xs"><CheckSquare size={13} /> Взять в работу</button>
-                <button className="btn-secondary text-xs">Передать</button>
-                <button className="btn-secondary text-xs">Закрыть</button>
-                <button className="btn-secondary text-xs ml-auto" onClick={() => openEntity(a)}>
-                  Открыть {a.entityType === 'holding' ? 'холдинг' : 'компанию'} →
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-2 mb-5">
+        <span className="text-sm font-medium text-slate-700">
+          {filter === 'all' ? 'Все алерты' : filter === 'new' ? 'Новые' : filter === 'in_progress' ? 'В работе' : 'Закрытые'}
+        </span>
+        <span className="text-xs text-slate-400">· {displayed.length}</span>
+        <div className="ml-auto flex flex-wrap items-center gap-3 max-md:ml-0">
+          {/* Дата — segmented control */}
+          <div className="flex items-center gap-1">
+            <Filter size={13} className="text-slate-400 mr-0.5" />
+            {([
+              { key: 'all', label: 'Все' },
+              { key: 'today', label: 'Сегодня' },
+              { key: 'period', label: 'Период' },
+            ] as const).map(o => {
+              const active = dateFilter === o.key;
+              return (
+                <button
+                  key={o.key}
+                  onClick={() => setDateFilter(o.key)}
+                  className={`text-xs font-medium px-2.5 py-1 rounded-md border transition-colors ${
+                    active
+                      ? 'bg-moex-red/5 border-moex-red text-moex-red'
+                      : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
+                  }`}>
+                  {o.label}
                 </button>
+              );
+            })}
+            {dateFilter === 'period' && (
+              <div className="flex items-center gap-1 ml-1">
+                <input
+                  type="date"
+                  value={periodFrom}
+                  onChange={e => setPeriodFrom(e.target.value)}
+                  className="text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-md px-2 py-1 hover:border-slate-300 focus:outline-none focus:border-moex-red"
+                />
+                <span className="text-xs text-slate-400">—</span>
+                <input
+                  type="date"
+                  value={periodTo}
+                  onChange={e => setPeriodTo(e.target.value)}
+                  className="text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-md px-2 py-1 hover:border-slate-300 focus:outline-none focus:border-moex-red"
+                />
               </div>
-            </div>
-          );
-        })}
+            )}
+          </div>
+
+          {/* Статус */}
+          <select
+            value={filter}
+            onChange={e => setFilter(e.target.value as typeof filter)}
+            className="text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-md px-2 py-1 hover:border-slate-300 focus:outline-none focus:border-moex-red"
+          >
+            <option value="all">Статус: все</option>
+            <option value="new">Новый</option>
+            <option value="in_progress">В работе</option>
+            <option value="resolved">Закрыт</option>
+          </select>
+
+          {/* Тип */}
+          <select
+            value={typeFilter}
+            onChange={e => setTypeFilter(e.target.value)}
+            className="text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-md px-2 py-1 hover:border-slate-300 focus:outline-none focus:border-moex-red"
+          >
+            <option value="all">Тип: все</option>
+            {Object.entries(alertTypeLabels).map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
+
+          {/* Важность */}
+          <select
+            value={severityFilter}
+            onChange={e => setSeverityFilter(e.target.value)}
+            className="text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-md px-2 py-1 hover:border-slate-300 focus:outline-none focus:border-moex-red"
+          >
+            <option value="all">Важность: любая</option>
+            {Object.entries(severityLabels).map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
+        </div>
       </div>
+
+      <div className="card overflow-x-auto">
+        <table className="w-full data-table">
+          <thead>
+            <tr>
+              <th>Алерт</th><th>Клиент/Холдинг</th><th>Дата</th>
+              {role !== 'manager' && <th>Ответственный</th>}<th>Важность</th><th>Тип</th><th>Статус</th>
+            </tr>
+          </thead>
+          <tbody>
+            {displayed.map(a => (
+              <tr key={a.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => openAlert(a)}>
+                <td>
+                  <div className="text-sm font-medium text-slate-900">{a.title}</div>
+                  <div className="text-xs text-slate-400 mt-0.5 max-w-xs truncate">{a.description}</div>
+                </td>
+                <td>
+                  {a.entityId ? (
+                    <button
+                      className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                      onClick={(e) => { e.stopPropagation(); navigate(`/clients/${clientIdForEntity(a.entityId) ?? a.entityId}`); }}
+                    >
+                      {a.entityName}
+                    </button>
+                  ) : (
+                    <span className="text-sm text-slate-400">{a.entityName}</span>
+                  )}
+                </td>
+                <td className="text-xs font-medium text-slate-600">{formatDate(a.date)}</td>
+                {role !== 'manager' && (
+                  <td className="text-xs text-slate-600">{a.responsibleName}</td>
+                )}
+                <td>
+                  <span className={`text-xs font-semibold px-1.5 py-0.5 rounded ${severityColor[a.severity]}`}>
+                    {severityLabels[a.severity]}
+                  </span>
+                </td>
+                <td><span className="badge-gray text-xs">{alertTypeLabels[a.type] ?? a.type}</span></td>
+                <td><AlertStatusBadge status={a.status} /></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {displayed.length === 0 && (
+          <div className="text-center py-12 text-slate-400">Нет алертов по выбранному фильтру</div>
+        )}
+      </div>
+
+      <AlertViewModal
+        key={selectedAlert?.id ?? 'none'}
+        alert={selectedAlert}
+        onCancel={() => setSelectedAlert(null)}
+        onComplete={result => {
+          if (selectedAlert) {
+            alertsService.update(selectedAlert.id, { status: 'resolved', result });
+          }
+          setSelectedAlert(null);
+        }}
+      />
     </Layout>
   );
 };

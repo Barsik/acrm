@@ -98,8 +98,20 @@ export const revenueService = {
 
 // --- Alerts Service ---
 // TODO: connect to ЕХД + Service Desk + CRM (агрегация алертов)
+// Подписчики на изменения алертов (живые счётчики в меню и т.п.)
+let alertListeners: Array<() => void> = [];
+const notifyAlertListeners = () => alertListeners.forEach(l => l());
+
 export const alertsService = {
   getAll: (): Alert[] => mockAlerts,
+  update: (id: string, patch: Partial<Alert>): void => {
+    const alert = mockAlerts.find(a => a.id === id);
+    if (alert) { Object.assign(alert, patch); notifyAlertListeners(); }
+  },
+  subscribe: (listener: () => void): (() => void) => {
+    alertListeners.push(listener);
+    return () => { alertListeners = alertListeners.filter(l => l !== listener); };
+  },
   getByEntity: (entityId: string): Alert[] =>
     mockAlerts.filter(a => a.entityId === entityId),
   getCritical: (): Alert[] =>
@@ -108,14 +120,22 @@ export const alertsService = {
     mockAlerts.filter(a => a.responsibleId === managerId),
 };
 
+// Подписчики на изменения задач (живые счётчики в меню и т.п.)
+let taskListeners: Array<() => void> = [];
+const notifyTaskListeners = () => taskListeners.forEach(l => l());
+
 // --- Tasks Service ---
 // TODO: connect to oCRM / BPMSoft / Service Desk
 export const tasksService = {
   getAll: (): Task[] => mockTasks,
-  create: (task: Task): void => { mockTasks.unshift(task); },
+  create: (task: Task): void => { mockTasks.unshift(task); notifyTaskListeners(); },
   update: (id: string, patch: Partial<Task>): void => {
     const task = mockTasks.find(t => t.id === id);
-    if (task) Object.assign(task, patch);
+    if (task) { Object.assign(task, patch); notifyTaskListeners(); }
+  },
+  subscribe: (listener: () => void): (() => void) => {
+    taskListeners.push(listener);
+    return () => { taskListeners = taskListeners.filter(l => l !== listener); };
   },
   getByEntity: (entityId: string): Task[] =>
     mockTasks.filter(t => t.entityId === entityId),

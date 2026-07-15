@@ -85,7 +85,7 @@ export const TasksPage = () => {
       </div>
 
       {/* Stats — click a tile to filter */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-4 max-md:grid-cols-2 gap-4 max-sm:gap-3 mb-6">
         {([
           { key: 'all', label: 'Всего задач', count: all.length, accent: '#5A6478' },
           { key: 'open', label: 'Новых', count: all.filter(t => t.status === 'open').length, accent: '#4A90D9' },
@@ -116,12 +116,12 @@ export const TasksPage = () => {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-2 mb-5">
+      <div className="flex flex-wrap items-center gap-2 mb-5">
         <span className="text-sm font-medium text-slate-700">
           {filter === 'all' ? 'Все задачи' : filter === 'open' ? 'Новые' : filter === 'in_progress' ? 'В работе' : 'Просроченные'}
         </span>
         <span className="text-xs text-slate-400">· {displayed.length}</span>
-        <div className="ml-auto flex items-center gap-3">
+        <div className="ml-auto flex flex-wrap items-center gap-3 max-md:ml-0">
           {/* Срок — segmented control */}
           <div className="flex items-center gap-1">
             <Filter size={13} className="text-slate-400 mr-0.5" />
@@ -201,7 +201,7 @@ export const TasksPage = () => {
         </div>
       </div>
 
-      <div className="card overflow-hidden">
+      <div className="card overflow-x-auto">
         <table className="w-full data-table">
           <thead>
             <tr>

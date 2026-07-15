@@ -152,13 +152,13 @@ export const CreateTaskModal = ({ open, onClose, onCreate }: CreateTaskModalProp
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 p-4" onMouseDown={close}>
-      <div className="w-full max-w-lg rounded-2xl bg-white shadow-2xl" onMouseDown={e => e.stopPropagation()}>
+      <div className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-2xl bg-white shadow-2xl" onMouseDown={e => e.stopPropagation()}>
         <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
           <h2 className="text-lg font-bold text-slate-900">Создать задачу</h2>
           <button className="rounded-lg p-2 hover:bg-slate-100" onClick={close}><X size={18} /></button>
         </div>
 
-        <div className="space-y-4 p-6">
+        <div className="flex-1 space-y-4 overflow-y-auto p-6">
           {/* Дата исполнения */}
           <label className="block text-xs font-semibold text-slate-600">
             Дата исполнения <span className="text-moex-red">*</span>
@@ -253,7 +253,7 @@ export const CreateTaskModal = ({ open, onClose, onCreate }: CreateTaskModalProp
           </div>
 
           {/* Тип и приоритет */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 max-sm:grid-cols-1">
             <label className="block text-xs font-semibold text-slate-600">
               Тип <span className="text-moex-red">*</span>
               <select

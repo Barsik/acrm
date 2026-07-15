@@ -4,7 +4,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
 import { Layout } from '../components/layout/Layout';
-import { KPICard, ScoreBadge, StatusBadge, TaskStatusBadge, AlertItem, AIInsightCard, SectionHeader, TrendArrow } from '../components/common';
+import { KPICard, ScoreBadge, StatusBadge, TaskStatusBadge, AlertStatusBadge, AlertItem, AIInsightCard, SectionHeader, TrendArrow } from '../components/common';
 import {
   holdingService, companyService, personService, alertsService,
   tasksService, aiInsightsService, revenueService, strategyService, newsService,
@@ -402,7 +402,7 @@ export const HoldingPage = () => {
                   }`}>{a.severity.toUpperCase()}</span>
                   <h3 className="text-sm font-semibold text-slate-900">{a.title}</h3>
                 </div>
-                <StatusBadge status={a.status} />
+                <AlertStatusBadge status={a.status} />
               </div>
               <p className="text-sm text-slate-600 mt-2">{a.description}</p>
               <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">

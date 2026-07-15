@@ -27,16 +27,17 @@ export const Layout = ({ children, contained = true }: LayoutProps) => {
 
   // When the menu is a left floating pill, reserve only the pill's strip and let
   // the work area stretch across all remaining width (no centered max-width cap).
+  // < lg левая пилюля скрыта (меню становится горизонтальным) — отступ не нужен;
+  // < md горизонтальная пилюля опускается под шапку — контенту нужен просвет сверху.
   const leftMode = menuPosition === 'left';
-  const leftClear = leftMode ? 220 : 0;
 
   return (
     <div style={{ minHeight: '100vh', background: '#F6F7FA' }}>
       <Header />
       <Sidebar />
-      <main style={{ paddingLeft: leftClear }}>
+      <main className={`${leftMode ? 'lg:pl-[220px]' : ''} max-md:pt-[64px]`}>
         {contained ? (
-          <div style={{ maxWidth: leftMode ? 'none' : 1600, margin: leftMode ? 0 : '0 auto', padding: '20px 32px 40px' }}>
+          <div className="pt-5 pb-10 px-8 max-sm:px-4" style={{ maxWidth: leftMode ? 'none' : 1600, margin: leftMode ? 0 : '0 auto' }}>
             {children}
           </div>
         ) : children}

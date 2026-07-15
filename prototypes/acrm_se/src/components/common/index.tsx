@@ -241,6 +241,26 @@ export const TaskStatusBadge = ({ status }: { status: string }) => {
   );
 };
 
+// Статусы алертов — аналогично задачам: Новый — синий, В работе — зелёный, Закрыт — серый
+const ALERT_STATUS: Record<string, { bg: string; fg: string; label: string }> = {
+  new: { bg: '#EBF4FC', fg: MOEX.infoText, label: 'Новый' },
+  in_progress: { bg: 'rgba(18,160,92,0.10)', fg: MOEX.pos, label: 'В работе' },
+  resolved: { bg: MOEX.chip, fg: MOEX.text2, label: 'Закрыт' },
+};
+
+export const AlertStatusBadge = ({ status }: { status: string }) => {
+  const s = ALERT_STATUS[status] || { bg: MOEX.chip, fg: MOEX.text2, label: status };
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center',
+      padding: '2px 10px', borderRadius: 99, fontSize: 11, fontWeight: 700,
+      background: s.bg, color: s.fg, whiteSpace: 'nowrap',
+    }}>
+      {s.label}
+    </span>
+  );
+};
+
 export const StatusBadge = ({ status }: { status: string }) => {
   const s = STATUS[status] || { bg: MOEX.chip, fg: MOEX.text2, label: status };
   return (

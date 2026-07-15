@@ -1,6 +1,6 @@
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
-import { ScoreBadge, StatusBadge, TaskStatusBadge, AlertItem, AIInsightCard, SectionHeader, TrendArrow } from '../components/common';
+import { ScoreBadge, StatusBadge, TaskStatusBadge, AlertStatusBadge, AlertItem, AIInsightCard, SectionHeader, TrendArrow } from '../components/common';
 import {
   companyService, personService, alertsService, tasksService,
   aiInsightsService, productService, strategyService, newsService,
@@ -275,7 +275,7 @@ export const CompanyPage = () => {
             <div key={a.id} className="card p-4">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-semibold text-slate-900">{a.title}</h3>
-                <StatusBadge status={a.status} />
+                <AlertStatusBadge status={a.status} />
               </div>
               <p className="text-sm text-slate-600">{a.description}</p>
               <div className="text-xs text-slate-400 mt-2">{a.source} · {a.date}</div>

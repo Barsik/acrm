@@ -233,6 +233,8 @@ export interface Alert {
   responsibleId: string;
   responsibleName: string;
   status: AlertStatus;
+  /** Результат обработки алерта — заполняется при закрытии. */
+  result?: string;
 }
 
 // =============================================
