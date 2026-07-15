@@ -102,6 +102,26 @@ body {
   background: #F4F4F4;
 }
 
+/* Печать Brief к встрече: на бумагу выводится только лист A4 */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .brief-print-area,
+  .brief-print-area * {
+    visibility: visible;
+  }
+  .brief-print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 15mm;
+    box-shadow: none !important;
+  }
+}
+
 /* Floating pill chrome (SideNav / AppHeader action pill) */
 .float-pill {
   background: #fff;

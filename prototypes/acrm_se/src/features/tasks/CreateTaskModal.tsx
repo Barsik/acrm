@@ -58,9 +58,11 @@ interface CreateTaskModalProps {
   open: boolean;
   onClose: () => void;
   onCreate: (task: Task) => void;
+  /** Клиент, подставляемый в поле «Клиент/Холдинг» по умолчанию (например, с карточки клиента). */
+  defaultClient?: ClientRecord;
 }
 
-export const CreateTaskModal = ({ open, onClose, onCreate }: CreateTaskModalProps) => {
+export const CreateTaskModal = ({ open, onClose, onCreate, defaultClient }: CreateTaskModalProps) => {
   const { role } = useApp();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const datePickerRef = useRef<HTMLInputElement>(null);
@@ -70,8 +72,8 @@ export const CreateTaskModal = ({ open, onClose, onCreate }: CreateTaskModalProp
   const [subtopic, setSubtopic] = useState('');
   const [taskType, setTaskType] = useState<Task['type'] | ''>('');
   const [priority, setPriority] = useState<Task['priority'] | ''>('');
-  const [clientQuery, setClientQuery] = useState('');
-  const [selectedClient, setSelectedClient] = useState<ClientRecord | null>(null);
+  const [clientQuery, setClientQuery] = useState(defaultClient?.name ?? '');
+  const [selectedClient, setSelectedClient] = useState<ClientRecord | null>(defaultClient ?? null);
   const [clientFocused, setClientFocused] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [assigneeId, setAssigneeId] = useState('');
@@ -86,7 +88,7 @@ export const CreateTaskModal = ({ open, onClose, onCreate }: CreateTaskModalProp
 
   const reset = () => {
     setDueDate(''); setTopic(''); setSubtopic(''); setTaskType(''); setPriority('');
-    setClientQuery(''); setSelectedClient(null); setClientFocused(false);
+    setClientQuery(defaultClient?.name ?? ''); setSelectedClient(defaultClient ?? null); setClientFocused(false);
     setFile(null); setAssigneeId(''); setAssignToSelf(false);
   };
 
