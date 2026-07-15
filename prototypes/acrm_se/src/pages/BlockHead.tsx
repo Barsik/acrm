@@ -4,7 +4,7 @@ import {
   ResponsiveContainer, BarChart, Bar,
 } from 'recharts';
 import { Layout } from '../components/layout/Layout';
-import { KPICard, ScoreBadge, AIInsightCard, SectionHeader, StatusBadge, ProgressBar, TrendArrow, PageTitle } from '../components/common';
+import { KPICard, ScoreBadge, AIInsightCard, SectionHeader, StatusBadge, TaskStatusBadge, ProgressBar, TrendArrow, PageTitle } from '../components/common';
 import { portfolioService, alertsService, tasksService, revenueService, aiInsightsService, holdingService, opportunitiesService } from '../services';
 import { formatRevenue, formatVolume } from '../data/mockData';
 import { Briefcase, AlertTriangle, Target, TrendingUp, ChevronRight, Users, CheckSquare } from 'lucide-react';
@@ -155,7 +155,7 @@ export const BlockHeadPage = () => {
             </div>
             {tasks.map(t => (
               <div key={t.id} className="flex items-start gap-2 p-2 rounded-lg hover:bg-slate-50 border-b border-slate-50 last:border-0">
-                <StatusBadge status={t.status} />
+                <TaskStatusBadge status={t.status} />
                 <div className="flex-1 min-w-0">
                   <div className="text-xs font-semibold text-slate-800 truncate">{t.title}</div>
                   <div className="text-xs text-slate-400">{t.assigneeName} · {t.dueDate}</div>

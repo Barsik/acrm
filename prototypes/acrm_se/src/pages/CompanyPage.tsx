@@ -1,6 +1,6 @@
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
-import { ScoreBadge, StatusBadge, AlertItem, AIInsightCard, SectionHeader, TrendArrow } from '../components/common';
+import { ScoreBadge, StatusBadge, TaskStatusBadge, AlertItem, AIInsightCard, SectionHeader, TrendArrow } from '../components/common';
 import {
   companyService, personService, alertsService, tasksService,
   aiInsightsService, productService, strategyService, newsService,
@@ -199,7 +199,7 @@ export const CompanyPage = () => {
               </div>
               {tasks.slice(0, 3).map(t => (
                 <div key={t.id} className="flex items-center gap-2 py-1.5 border-b border-slate-50 last:border-0">
-                  <StatusBadge status={t.status} />
+                  <TaskStatusBadge status={t.status} />
                   <span className="text-xs text-slate-700 flex-1 truncate">{t.title}</span>
                   <span className="text-xs text-slate-400">{t.dueDate}</span>
                 </div>
@@ -309,7 +309,7 @@ export const CompanyPage = () => {
                   <td><span className={`text-xs font-medium px-1.5 py-0.5 rounded ${t.priority === 'critical' ? 'bg-red-100 text-red-700' : t.priority === 'high' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'}`}>{t.priority}</span></td>
                   <td className="text-xs text-slate-500">{t.assigneeName}</td>
                   <td className="text-xs text-slate-500">{t.dueDate}</td>
-                  <td><StatusBadge status={t.status} /></td>
+                  <td><TaskStatusBadge status={t.status} /></td>
                 </tr>
               ))}
               {tasks.length === 0 && <tr><td colSpan={6} className="text-center py-8 text-slate-400">Нет задач</td></tr>}

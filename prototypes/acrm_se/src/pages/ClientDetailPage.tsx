@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
-import { StatusBadge, AlertItem, AIInsightCard, SectionHeader } from '../components/common';
+import { StatusBadge, TaskStatusBadge, AlertItem, AIInsightCard, SectionHeader } from '../components/common';
 import {
   alertsService, personService, tasksService,
   aiInsightsService, productService,
 } from '../services';
 import { clients as clientRecords } from '../data/mockDatabase';
+import { clientIdForEntity } from '../data/entityToClient';
 import { CompanyRankingTab } from '../features/ranking/CompanyRankingTab';
 import { PortfolioAnalyticsTab } from '../features/portfolioAnalytics/PortfolioAnalyticsTab';
 import { formatRevenue, formatVolume } from '../data/mockData';
@@ -28,7 +29,11 @@ export const ClientDetailPage = () => {
   const client = clientRecords.find((item) => item.id === Number(id));
   const persons = personService.getByCompany(String(client?.id ?? ''));
   const alerts = alertsService.getByEntity(String(client?.id ?? ''));
-  const tasks = tasksService.getByEntity(String(client?.id ?? ''));
+  // Задачи привязаны к холдингам/компаниям mockData (через сопоставление)
+  // или напрямую к клиенту (задачи, созданные через форму)
+  const tasks = tasksService.getAll().filter(t =>
+    t.entityId && (clientIdForEntity(t.entityId) === client?.id || t.entityId === String(client?.id)),
+  );
   const insights = aiInsightsService.getByEntity(String(client?.id ?? ''));
   const products = productService.getByCompany(String(client?.id ?? ''));
   const healthScore = client?.id % 3 === 0 ? 72 : 68;
@@ -187,7 +192,7 @@ export const ClientDetailPage = () => {
               </div>
               {tasks.slice(0, 3).map(t => (
                 <div key={t.id} className="flex items-center gap-2 py-1.5 border-b border-slate-50 last:border-0">
-                  <StatusBadge status={t.status} />
+                  <TaskStatusBadge status={t.status} />
                   <span className="text-xs text-slate-700 flex-1 truncate">{t.title}</span>
                   <span className="text-xs text-slate-400">{t.dueDate}</span>
                 </div>
@@ -297,7 +302,7 @@ export const ClientDetailPage = () => {
                     <td><span className={`text-xs font-medium px-1.5 py-0.5 rounded ${t.priority === 'critical' ? 'bg-red-100 text-red-700' : t.priority === 'high' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'}`}>{t.priority}</span></td>
                     <td className="text-xs text-slate-500">{t.assigneeName}</td>
                     <td className="text-xs text-slate-500">{t.dueDate}</td>
-                    <td><StatusBadge status={t.status} /></td>
+                    <td><TaskStatusBadge status={t.status} /></td>
                   </tr>
                 ))}
                 {tasks.length === 0 && <tr><td colSpan={6} className="text-center py-8 text-slate-400">Нет задач</td></tr>}

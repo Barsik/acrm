@@ -112,6 +112,11 @@ export const alertsService = {
 // TODO: connect to oCRM / BPMSoft / Service Desk
 export const tasksService = {
   getAll: (): Task[] => mockTasks,
+  create: (task: Task): void => { mockTasks.unshift(task); },
+  update: (id: string, patch: Partial<Task>): void => {
+    const task = mockTasks.find(t => t.id === id);
+    if (task) Object.assign(task, patch);
+  },
   getByEntity: (entityId: string): Task[] =>
     mockTasks.filter(t => t.entityId === entityId),
   getByAssignee: (assigneeId: string): Task[] =>

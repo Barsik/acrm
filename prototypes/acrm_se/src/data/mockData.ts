@@ -574,6 +574,21 @@ export const mockTasks: Task[] = [
     dueDate: '2026-06-20',
     createdAt: '2026-06-07',
   },
+  {
+    id: 't6',
+    title: 'Согласовать протокол расхождений с Россельхозбанк',
+    description: 'Ответ по протоколу расхождений не направлен в срок. Требуется эскалация.',
+    type: 'escalation',
+    priority: 'critical',
+    status: 'overdue',
+    assigneeId: 'mgr2',
+    assigneeName: 'Мария Соколова',
+    entityId: 'h5',
+    entityName: 'Россельхозбанк',
+    entityType: 'holding',
+    dueDate: '2026-06-04',
+    createdAt: '2026-05-27',
+  },
 ];
 
 // =============================================

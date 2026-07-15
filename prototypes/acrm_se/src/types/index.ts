@@ -254,6 +254,8 @@ export interface Task {
   dueDate: string;
   createdAt: string;
   completedAt?: string;
+  /** Результат обработки задачи — заполняется при закрытии. */
+  result?: string;
 }
 
 // =============================================

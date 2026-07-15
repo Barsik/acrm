@@ -220,6 +220,27 @@ const STATUS: Record<string, { bg: string; fg: string; label: string }> = {
   expired: { bg: '#FDE7EA', fg: MOEX.red, label: 'Истёк' },
 };
 
+// Статусы задач: Новая — синий, В работе — зелёный, Просроченная — красный
+const TASK_STATUS: Record<string, { bg: string; fg: string; label: string }> = {
+  open: { bg: '#EBF4FC', fg: MOEX.infoText, label: 'Новая' },
+  in_progress: { bg: 'rgba(18,160,92,0.10)', fg: MOEX.pos, label: 'В работе' },
+  overdue: { bg: '#FDE7EA', fg: MOEX.red, label: 'Просроченная' },
+  done: { bg: MOEX.chip, fg: MOEX.text2, label: 'Выполнена' },
+};
+
+export const TaskStatusBadge = ({ status }: { status: string }) => {
+  const s = TASK_STATUS[status] || { bg: MOEX.chip, fg: MOEX.text2, label: status };
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center',
+      padding: '2px 10px', borderRadius: 99, fontSize: 11, fontWeight: 700,
+      background: s.bg, color: s.fg, whiteSpace: 'nowrap',
+    }}>
+      {s.label}
+    </span>
+  );
+};
+
 export const StatusBadge = ({ status }: { status: string }) => {
   const s = STATUS[status] || { bg: MOEX.chip, fg: MOEX.text2, label: status };
   return (

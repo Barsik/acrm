@@ -4,7 +4,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
 import { Layout } from '../components/layout/Layout';
-import { KPICard, ScoreBadge, StatusBadge, AlertItem, AIInsightCard, SectionHeader, TrendArrow } from '../components/common';
+import { KPICard, ScoreBadge, StatusBadge, TaskStatusBadge, AlertItem, AIInsightCard, SectionHeader, TrendArrow } from '../components/common';
 import {
   holdingService, companyService, personService, alertsService,
   tasksService, aiInsightsService, revenueService, strategyService, newsService,
@@ -236,7 +236,7 @@ export const HoldingPage = () => {
                 <div className="text-xs text-slate-400 text-center py-4">Нет задач</div>
               ) : tasks.slice(0, 3).map(t => (
                 <div key={t.id} className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50 border-b border-slate-50 last:border-0">
-                  <StatusBadge status={t.status} />
+                  <TaskStatusBadge status={t.status} />
                   <div className="flex-1 min-w-0">
                     <div className="text-xs font-medium text-slate-800 truncate">{t.title}</div>
                     <div className="text-xs text-slate-400">{t.dueDate}</div>
@@ -378,7 +378,7 @@ export const HoldingPage = () => {
                   <td><span className={`text-xs font-medium px-1.5 py-0.5 rounded ${t.priority === 'critical' ? 'bg-red-100 text-red-700' : t.priority === 'high' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'}`}>{t.priority}</span></td>
                   <td className="text-slate-500 text-xs">{t.assigneeName}</td>
                   <td className="text-slate-500 text-xs">{t.dueDate}</td>
-                  <td><StatusBadge status={t.status} /></td>
+                  <td><TaskStatusBadge status={t.status} /></td>
                 </tr>
               )) : (
                 <tr><td colSpan={6} className="text-center py-8 text-slate-400">Нет задач</td></tr>

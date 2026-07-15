@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom';
+import { clientIdForEntity } from './data/entityToClient';
 import { AppProvider, useApp } from './context/AppContext';
 import { RoleSelect } from './pages/RoleSelect';
 import { CEOPage } from './pages/CEO';
@@ -9,8 +10,6 @@ import { OperationsPage } from './pages/Operations';
 import { HoldingsListPage } from './pages/HoldingsListPage';
 import { ClientsPage } from './pages/ClientsPage';
 import { ClientDetailPage } from './pages/ClientDetailPage';
-import { HoldingPage } from './pages/HoldingPage';
-import { CompanyPage } from './pages/CompanyPage';
 import { PersonPage } from './pages/PersonPage';
 import { PersonsListPage } from './pages/PersonsListPage';
 import { AlertsPage } from './pages/AlertsPage';
@@ -37,6 +36,13 @@ const roleHomePath: Record<string, string> = {
   operations: '/operations',
 };
 
+// Переход в холдинг/компанию с любой страницы открывает стандартную карточку клиента
+const EntityRedirect = () => {
+  const { id } = useParams();
+  const clientId = clientIdForEntity(id ?? '');
+  return <Navigate to={clientId ? `/clients/${clientId}` : '/clients'} replace />;
+};
+
 const RootRedirect = () => {
   const { role } = useApp();
   if (role) return <Navigate to={roleHomePath[role] || '/role-select'} replace />;
@@ -57,8 +63,8 @@ const AppRoutes = () => (
     <Route path="/portfolio" element={<ClientsPage />} />
     <Route path="/clients" element={<ClientsPage />} />
     <Route path="/clients/:id" element={<ClientDetailPage />} />
-    <Route path="/holdings/:id" element={<HoldingPage />} />
-    <Route path="/companies/:id" element={<CompanyPage />} />
+    <Route path="/holdings/:id" element={<EntityRedirect />} />
+    <Route path="/companies/:id" element={<EntityRedirect />} />
     <Route path="/broker/:companyId" element={<BrokerPortalPage />} />
     <Route path="/persons" element={<PersonsListPage />} />
     <Route path="/persons/:id" element={<PersonPage />} />
