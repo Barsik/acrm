@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { KPICard, ScoreBadge, SectionHeader, StatusBadge, TrendArrow, PageTitle, Card, ProgressBar } from '../components/common';
 import { holdingService, newsService, opportunitiesService } from '../services';
+import { clientPathFor } from '../data/entityToClient';
 import { formatRevenue, formatVolume } from '../data/mockData';
 import { UserCheck, AlertTriangle, Target, ChevronRight, Search, Clock, Frown, TrendingDown, Package, Cake, BarChart3, Ban } from 'lucide-react';
 import { heatClients, getHeatAlerts, heatAlertScore, heatDaysAgo, heatFmt } from '../data/heatmap';
@@ -331,7 +332,11 @@ export const ManagerPage = () => {
               <h3 className="text-sm font-semibold text-slate-900">Потенциал роста</h3>
             </div>
             {opportunities.slice(0, 3).map(o => (
-              <div key={o.id} className="p-2.5 rounded-lg bg-green-50 border border-green-100 mb-2">
+              <div
+                key={o.id}
+                className="p-2.5 rounded-lg bg-green-50 border border-green-100 mb-2 cursor-pointer hover:border-green-300"
+                onClick={() => { const p = clientPathFor(o.entityId, o.entityName); if (p) navigate(p); }}
+              >
                 <div className="text-xs font-semibold text-slate-900">{o.entityName}</div>
                 <div className="text-xs text-slate-600">{o.description.slice(0, 60)}...</div>
                 <div className="text-xs text-green-700 font-semibold mt-1">+{formatRevenue(o.potentialRevenue)}</div>

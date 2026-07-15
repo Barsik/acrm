@@ -1,9 +1,12 @@
+import { useNavigate } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { StatusBadge } from '../components/common';
 import { agreementsService } from '../services';
+import { clientPathFor } from '../data/entityToClient';
 import { FileText, AlertTriangle } from 'lucide-react';
 
 export const AgreementsPage = () => {
+  const navigate = useNavigate();
   const agreements = agreementsService.getAll();
   const expiring = agreementsService.getExpiring();
 
@@ -45,7 +48,18 @@ export const AgreementsPage = () => {
               <tr key={ag.id} className={`hover:bg-slate-50 ${ag.status === 'expiring' ? 'bg-amber-50' : ''}`}>
                 <td className="font-medium text-slate-900">{ag.title}</td>
                 <td><span className="badge-gray text-xs">{typeLabels[ag.type]}</span></td>
-                <td className="text-sm text-slate-600">{ag.entityName}</td>
+                <td>
+                  {clientPathFor(ag.entityId, ag.entityName) ? (
+                    <button
+                      className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                      onClick={(e) => { e.stopPropagation(); navigate(clientPathFor(ag.entityId, ag.entityName)!); }}
+                    >
+                      {ag.entityName}
+                    </button>
+                  ) : (
+                    <span className="text-sm text-slate-600">{ag.entityName}</span>
+                  )}
+                </td>
                 <td className="text-xs text-slate-500">{ag.signedDate}</td>
                 <td className={`text-xs font-semibold ${ag.status === 'expiring' ? 'text-amber-600' : ag.status === 'expired' ? 'text-red-600' : 'text-slate-600'}`}>
                   {ag.expiresDate}

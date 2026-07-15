@@ -7,6 +7,7 @@ import {
 import { Layout } from '../components/layout/Layout';
 import { KPICard, AIInsightCard, SectionHeader, StatusBadge, ScoreBadge, TrendArrow, PageTitle } from '../components/common';
 import { productService, holdingService, alertsService, aiInsightsService, opportunitiesService } from '../services';
+import { clientPathFor } from '../data/entityToClient';
 import { formatRevenue, formatVolume } from '../data/mockData';
 import { BarChart2, Target, AlertTriangle, Zap, Users, Plus, Filter, Brain, ChevronRight } from 'lucide-react';
 
@@ -184,7 +185,11 @@ export const MarketLeadPage = () => {
               <button className="text-xs text-blue-600" onClick={() => navigate('/alerts')}>Все →</button>
             </div>
             {alerts.slice(0, 3).map(a => (
-              <div key={a.id} className="p-2.5 rounded-lg border border-slate-100 mb-2 hover:bg-slate-50">
+              <div
+                key={a.id}
+                className="p-2.5 rounded-lg border border-slate-100 mb-2 hover:bg-slate-50 cursor-pointer"
+                onClick={() => { const p = clientPathFor(a.entityId, a.entityName); if (p) navigate(p); }}
+              >
                 <div className="text-xs font-semibold text-slate-900">{a.entityName}</div>
                 <div className="text-xs text-slate-500 mt-0.5">{a.title}</div>
               </div>

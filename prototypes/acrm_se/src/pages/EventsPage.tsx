@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { SectionHeader } from '../components/common';
 import { eventIntelligenceService } from '../services';
+import { clientPathFor } from '../data/entityToClient';
 import { Calendar, Star, UserPlus, Download, ChevronRight, Filter } from 'lucide-react';
 
 const influenceLabels: Record<string, string> = {
@@ -147,7 +148,16 @@ export const EventsPage = () => {
                   </div>
                 </td>
                 <td>
-                  <div className="text-sm text-slate-700">{p.companyName}</div>
+                  {clientPathFor(undefined, p.companyName) ? (
+                    <button
+                      className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                      onClick={(e) => { e.stopPropagation(); navigate(clientPathFor(undefined, p.companyName)!); }}
+                    >
+                      {p.companyName}
+                    </button>
+                  ) : (
+                    <div className="text-sm text-slate-700">{p.companyName}</div>
+                  )}
                   <div className="text-xs text-slate-400">{p.title}</div>
                 </td>
                 <td><span className={influenceColors[p.influenceLevel]}>{influenceLabels[p.influenceLevel]}</span></td>

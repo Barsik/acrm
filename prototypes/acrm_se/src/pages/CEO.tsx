@@ -10,6 +10,7 @@ import {
   holdingService, revenueService, productService, aiInsightsService,
   alertsService, opportunitiesService,
 } from '../services';
+import { clientPathFor } from '../data/entityToClient';
 import { formatRevenue, formatVolume, formatPercent } from '../data/mockData';
 import { Brain, TrendingUp, AlertTriangle, Target, FileText, Users, ChevronRight, Crown, BarChart2 } from 'lucide-react';
 
@@ -233,7 +234,11 @@ export const CEOPage = () => {
               </button>
             </div>
             {alerts.slice(0, 3).map(a => (
-              <div key={a.id} className="flex items-start gap-2 p-2.5 rounded-lg border border-slate-100 mb-2 hover:bg-slate-50 cursor-pointer">
+              <div
+                key={a.id}
+                className="flex items-start gap-2 p-2.5 rounded-lg border border-slate-100 mb-2 hover:bg-slate-50 cursor-pointer"
+                onClick={() => { const p = clientPathFor(a.entityId, a.entityName); if (p) navigate(p); }}
+              >
                 <SeverityBadge severity={a.severity} />
                 <div className="flex-1 min-w-0">
                   <div className="text-xs font-semibold text-slate-900">{a.entityName}</div>
@@ -250,7 +255,11 @@ export const CEOPage = () => {
               <button className="text-xs text-green-600 hover:text-green-800">Все →</button>
             </div>
             {opportunities.slice(0, 3).map(o => (
-              <div key={o.id} className="p-2.5 rounded-lg bg-green-50 border border-green-100 mb-2">
+              <div
+                key={o.id}
+                className="p-2.5 rounded-lg bg-green-50 border border-green-100 mb-2 cursor-pointer hover:border-green-300"
+                onClick={() => { const p = clientPathFor(o.entityId, o.entityName); if (p) navigate(p); }}
+              >
                 <div className="text-xs font-semibold text-slate-900">{o.entityName}</div>
                 <div className="text-xs text-slate-600">{o.product}</div>
                 <div className="flex items-center justify-between mt-1">

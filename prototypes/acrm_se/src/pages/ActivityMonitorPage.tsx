@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { activityMonitorService } from '../services';
 import { clientGroups, clearingCategories } from '../data/mockDatabase';
@@ -57,6 +58,7 @@ const fmtDate = (iso?: string) =>
   iso ? new Date(iso + 'T00:00:00').toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—';
 
 export const ActivityMonitorPage = () => {
+  const navigate = useNavigate();
   const markets = activityMonitorService.getMarkets();
   const all = activityMonitorService.getClients();
 
@@ -142,7 +144,12 @@ export const ActivityMonitorPage = () => {
                   <div className="flex items-center gap-2.5">
                     <ClientAvatar name={c.name} logo={c.logo} />
                     <div>
-                      <div className="text-sm font-medium text-slate-900">{c.name}</div>
+                      <button
+                        className="text-sm font-medium text-slate-900 hover:text-blue-700 text-left"
+                        onClick={() => navigate(`/clients/${c.id}`)}
+                      >
+                        {c.name}
+                      </button>
                       {(c.group || c.clearingCategory || c.restrictions === 'да') && (
                         <div className="flex flex-wrap items-center gap-1 mt-1">
                           {c.group && <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">{c.group}</span>}

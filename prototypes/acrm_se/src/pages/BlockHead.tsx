@@ -6,6 +6,7 @@ import {
 import { Layout } from '../components/layout/Layout';
 import { KPICard, ScoreBadge, AIInsightCard, SectionHeader, StatusBadge, TaskStatusBadge, ProgressBar, TrendArrow, PageTitle } from '../components/common';
 import { portfolioService, alertsService, tasksService, revenueService, aiInsightsService, holdingService, opportunitiesService } from '../services';
+import { clientPathFor } from '../data/entityToClient';
 import { formatRevenue, formatVolume } from '../data/mockData';
 import { Briefcase, AlertTriangle, Target, TrendingUp, ChevronRight, Users, CheckSquare } from 'lucide-react';
 
@@ -136,7 +137,11 @@ export const BlockHeadPage = () => {
           <div className="card p-4">
             <h3 className="text-sm font-semibold text-slate-900 mb-3">Возможности роста</h3>
             {opportunities.map(o => (
-              <div key={o.id} className="p-2.5 rounded-lg bg-green-50 border border-green-100 mb-2">
+              <div
+                key={o.id}
+                className="p-2.5 rounded-lg bg-green-50 border border-green-100 mb-2 cursor-pointer hover:border-green-300"
+                onClick={() => { const p = clientPathFor(o.entityId, o.entityName); if (p) navigate(p); }}
+              >
                 <div className="text-xs font-semibold text-slate-900">{o.entityName}</div>
                 <div className="text-xs text-slate-600">{o.product}</div>
                 <div className="flex justify-between mt-1">

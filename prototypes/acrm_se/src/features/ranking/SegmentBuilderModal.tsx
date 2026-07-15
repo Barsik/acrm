@@ -73,7 +73,7 @@ export const SegmentBuilderModal = ({ open, filters, onClose, onApply }: Segment
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/35" onMouseDown={onClose}>
-      <aside className="flex h-full w-full max-w-3xl flex-col bg-white shadow-2xl" onMouseDown={e => e.stopPropagation()}>
+      <aside className="flex h-full w-full max-w-xl flex-col bg-white shadow-2xl" onMouseDown={e => e.stopPropagation()}>
         <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
           <div>
             <h2 className="text-lg font-bold text-slate-900">Конструктор сегмента</h2>

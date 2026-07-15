@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Layout } from '../components/layout/Layout';
 import { personService } from '../services';
+import { clientPathFor } from '../data/entityToClient';
 import { Search, Users, ChevronRight } from 'lucide-react';
 
 const influenceColors: Record<string, string> = {
@@ -74,8 +75,30 @@ export const PersonsListPage = () => {
                     </div>
                   </div>
                 </td>
-                <td className="text-sm text-slate-600">{p.companyName}</td>
-                <td className="text-sm text-slate-500">{p.holdingName}</td>
+                <td>
+                  {clientPathFor(p.companyId, p.companyName) ? (
+                    <button
+                      className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                      onClick={(e) => { e.stopPropagation(); navigate(clientPathFor(p.companyId, p.companyName)!); }}
+                    >
+                      {p.companyName}
+                    </button>
+                  ) : (
+                    <span className="text-sm text-slate-600">{p.companyName}</span>
+                  )}
+                </td>
+                <td>
+                  {clientPathFor(p.holdingId, p.holdingName) ? (
+                    <button
+                      className="text-sm text-blue-600 hover:text-blue-800"
+                      onClick={(e) => { e.stopPropagation(); navigate(clientPathFor(p.holdingId, p.holdingName)!); }}
+                    >
+                      {p.holdingName}
+                    </button>
+                  ) : (
+                    <span className="text-sm text-slate-500">{p.holdingName}</span>
+                  )}
+                </td>
                 <td><span className="badge-blue text-xs">{roleLabels[p.personRole]}</span></td>
                 <td><span className={influenceColors[p.influenceLevel]}>{influenceLabels[p.influenceLevel]}</span></td>
                 <td>
